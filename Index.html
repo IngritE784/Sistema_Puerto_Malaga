@@ -5,14 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión - Tienda</title>
     
+    <!-- QuaggaJS para escaneo real de código de barras -->
+    <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
-    
-    
     <style>
         :root {
             --primary: #0B2E59;
@@ -263,6 +266,11 @@
             font-size: 0.9rem;
         }
         
+        .btn-ghost {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+        }
+        
         /* Tables */
         .table {
             width: 100%;
@@ -374,6 +382,231 @@
         .stock-normal {
             border-left-color: var(--success);
         }
+
+        /* ========== ESTILOS DEL HTML 1 ========== */
+        
+        /* NUEVO Dashboard */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        
+        .kpi-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: .9rem;
+            border: 1px solid #eef2f5;
+        }
+        
+        .kpi-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            background: var(--accent);
+        }
+        
+        .kpi-title {
+            font-size: .9rem;
+            color: var(--text-light);
+        }
+        
+        .kpi-value {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .cards-graphics {
+            display: grid;
+            grid-template-columns: 2fr 3fr 2fr;
+            gap: 1rem;
+        }
+        
+        @media (max-width: 1100px) {
+            .cards-graphics {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+            border: 1px solid #eef2f5;
+        }
+
+        .tables-grid {
+            display: grid;
+            grid-template-columns: 2fr 2fr 3fr;
+            gap: 1rem;
+        }
+        
+        @media (max-width: 1100px) {
+            .tables-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .table-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: .5rem;
+        }
+        
+        .table-sm {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+            border: 1px solid #eef2f5;
+        }
+        
+        .table-sm th, .table-sm td {
+            padding: .6rem .8rem;
+            border-bottom: 1px solid #eef2f5;
+            font-size: .92rem;
+        }
+        
+        .table-sm th {
+            background: #f6f9fc;
+            color: #394a6a;
+            text-transform: uppercase;
+            letter-spacing: .02em;
+            font-size: .78rem;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: .2rem .5rem;
+            border-radius: 999px;
+            font-size: .75rem;
+            background: #eef4ff;
+            color: #1e3a8a;
+        }
+        
+        .badge-danger {
+            background: #ffe4e6;
+            color: #991b1b;
+        }
+        
+        .filters-panel {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(150px, 1fr)) auto;
+            gap: .6rem;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 1100px) {
+            .filters-panel {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Modal simple (reutilizado) */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            width: min(900px, 95vw);
+        }
+
+        /* Productos para venta */
+        .productos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .producto-venta {
+            background: #fff;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--primary);
+            transition: transform .2s;
+        }
+        
+        .producto-venta:hover {
+            transform: translateY(-3px);
+        }
+        
+        .producto-venta.stock-bajo {
+            border-left-color: var(--danger);
+        }
+
+        /* Estilos para el escáner real */
+        #videoCamara {
+            width: 100%;
+            height: 300px;
+            background: #000;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
+        .quagga-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 3px solid #E5533D;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        .scan-line {
+            position: absolute;
+            height: 3px;
+            background: #E5533D;
+            width: 100%;
+            top: 50%;
+            animation: scan 2s ease-in-out infinite;
+            box-shadow: 0 0 10px #E5533D;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-100px); }
+            50% { transform: translateY(100px); }
+            100% { transform: translateY(-100px); }
+        }
+
+        /* Indicador de escaneo activo */
+        .scanning-indicator {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(229, 83, 61, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -450,45 +683,164 @@
             </nav>
             
             <main class="content">
-                <!-- Dashboard Section -->
+                <!-- Dashboard Section MEJORADO con elementos del HTML 1 -->
                 <section id="dashboardSection">
-                    <div class="card">
+                    <div class="card" style="margin-bottom:1rem;">
                         <div class="card-header">
-                            <h2 class="card-title">Dashboard Principal</h2>
-                            <button class="btn btn-primary" onclick="refreshDashboard()">
-                                <i class="fas fa-sync-alt"></i> Actualizar
-                            </button>
+                            <h2 class="card-title">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard General
+                            </h2>
+                            <div class="quick-actions">
+                                <button class="btn btn-success btn-sm" onclick="showSection('productos'); mostrarModalRegistroProducto()">
+                                    <i class="fas fa-plus"></i> Agregar producto
+                                </button>
+                                <button class="btn btn-primary btn-sm" onclick="showSection('ventas')">
+                                    <i class="fas fa-cash-register"></i> Registrar venta
+                                </button>
+                                <button class="btn btn-warning btn-sm" onclick="showSection('inventario')">
+                                    <i class="fas fa-boxes-stacked"></i> Actualizar stock
+                                </button>
+                                <button class="btn btn-ghost btn-sm" onclick="loadDashboard()">
+                                    <i class="fas fa-sync-alt"></i> Actualizar
+                                </button>
+                            </div>
                         </div>
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <i class="fas fa-boxes" style="font-size: 2rem; color: var(--primary);"></i>
-                                <div class="stat-number" id="totalProductos">0</div>
-                                <div class="stat-label">Productos Activos</div>
+
+                        <!-- Filtros del HTML 1 -->
+                        <div class="filters-panel">
+                            <div>
+                                <label class="form-label">Desde</label>
+                                <input type="date" class="form-control" id="fDesde">
                             </div>
-                            <div class="stat-card success">
-                                <i class="fas fa-shopping-cart" style="font-size: 2rem; color: var(--success);"></i>
-                                <div class="stat-number" id="totalVentasHoy">S/ 0.00</div>
-                                <div class="stat-label">Ventas Hoy</div>
+                            <div>
+                                <label class="form-label">Hasta</label>
+                                <input type="date" class="form-control" id="fHasta">
                             </div>
-                            <div class="stat-card warning">
-                                <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: var(--warning);"></i>
-                                <div class="stat-number" id="alertasStock">0</div>
-                                <div class="stat-label">Alertas Stock</div>
+                            <div>
+                                <label class="form-label">Categoría</label>
+                                <input type="text" class="form-control" id="fCategoria" placeholder="Ej. Bebidas">
                             </div>
-                            <div class="stat-card danger">
-                                <i class="fas fa-box" style="font-size: 2rem; color: var(--danger);"></i>
-                                <div class="stat-number" id="productosBajoStock">0</div>
-                                <div class="stat-label">Productos Bajo Stock</div>
+                            <div>
+                                <label class="form-label">Proveedor</label>
+                                <input type="text" class="form-control" id="fProveedor" placeholder="Proveedor">
+                            </div>
+                            <div>
+                                <label class="form-label">Cliente</label>
+                                <input type="text" class="form-control" id="fCliente" placeholder="Nombre/ID cliente">
+                            </div>
+                            <div>
+                                <label class="form-label">Frecuencia</label>
+                                <select id="fFrecuencia" class="form-control">
+                                    <option value="semanal">Semanal (7d)</option>
+                                    <option value="mensual">Mensual (30d)</option>
+                                </select>
+                            </div>
+                            <div style="display:flex; align-items:flex-end;">
+                                <button class="btn btn-primary" onclick="loadDashboard()">
+                                    <i class="fas fa-filter"></i> Aplicar filtros
+                                </button>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Alertas Recientes</h2>
+
+                    <!-- KPIs del HTML 1 -->
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-icon"><i class="fas fa-shopping-cart"></i></div>
+                            <div>
+                                <div class="kpi-title">Ventas del día</div>
+                                <div class="kpi-value" id="kpiVentasDia">S/ 0.00</div>
+                            </div>
                         </div>
-                        <div id="alertasList">
-                            <p class="text-center">Cargando alertas...</p>
+                        <div class="kpi-card">
+                            <div class="kpi-icon"><i class="fas fa-money-bill-wave"></i></div>
+                            <div>
+                                <div class="kpi-title">Ingresos del mes</div>
+                                <div class="kpi-value" id="kpiIngresosMes">S/ 0.00</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon"><i class="fas fa-boxes"></i></div>
+                            <div>
+                                <div class="kpi-title">Productos en stock</div>
+                                <div class="kpi-value" id="kpiProductosStock">0</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div>
+                                <div class="kpi-title">Por agotarse</div>
+                                <div class="kpi-value" id="kpiPorAgotarse">0</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon"><i class="fas fa-user-friends"></i></div>
+                            <div>
+                                <div class="kpi-title">Clientes registrados</div>
+                                <div class="kpi-value" id="kpiClientes">0</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon"><i class="fas fa-truck"></i></div>
+                            <div>
+                                <div class="kpi-title">Pedidos: Pend. / Entreg.</div>
+                                <div class="kpi-value"><span id="kpiPendientes">0</span> / <span id="kpiEntregados">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráficos del HTML 1 -->
+                    <div class="cards-graphics">
+                        <div class="chart-card">
+                            <div class="card-header" style="padding:0; margin-bottom:.5rem; border-bottom:none;">
+                                <h3 class="card-title">Ventas por categoría</h3>
+                            </div>
+                            <canvas id="chartCategorias" height="180"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <div class="card-header" style="padding:0; margin-bottom:.5rem; border-bottom:none;">
+                                <h3 class="card-title">Tendencia de ventas</h3>
+                            </div>
+                            <canvas id="chartTendencia" height="180"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <div class="card-header" style="padding:0; margin-bottom:.5rem; border-bottom:none;">
+                                <h3 class="card-title">Top productos</h3>
+                            </div>
+                            <canvas id="chartTopProductos" height="180"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Tablas del HTML 1 -->
+                    <div class="tables-grid" style="margin-top:1rem;">
+                        <div class="chart-card">
+                            <div class="table-title"><i class="fas fa-trophy"></i> Productos más vendidos</div>
+                            <table class="table-sm" id="tblMasVendidos">
+                                <thead><tr>
+                                    <th>Producto</th><th>Categoría</th><th>Unidades</th><th>Ganancia (S/)</th>
+                                </tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="table-title"><i class="fas fa-exclamation-circle"></i> Bajo stock</div>
+                            <table class="table-sm" id="tblBajoStock">
+                                <thead><tr>
+                                    <th>Producto</th><th>Categoría</th><th>Stock</th><th>Mínimo</th>
+                                </tr></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+
+                        <div class="chart-card">
+                            <div class="table-title"><i class="fas fa-receipt"></i> Últimos pedidos</div>
+                            <table class="table-sm" id="tblUltimosPedidos">
+                                <thead><tr>
+                                    <th>Fecha</th><th>Cliente</th><th>Monto (S/)</th><th>Estado</th><th>ID</th>
+                                </tr></thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
                     </div>
                 </section>
@@ -533,7 +885,8 @@
                                     <div class="card-header">
                                         <h3 class="card-title">Productos Disponibles</h3>
                                     </div>
-                                    <div id="listaProductosVenta"></div>
+                                    <!-- Usando el grid de productos del HTML 1 -->
+                                    <div class="productos-grid" id="listaProductosVenta"></div>
                                 </div>
                             </div>
                             
@@ -567,11 +920,9 @@
                         </div>
                     </div>
                 </section>
-                
 
-
-                  <!-- Reemplazar la sección de productos con este código -->
-                  <section id="productosSection" class="hidden">
+                <!-- Productos Section -->
+                <section id="productosSection" class="hidden">
                     <div class="card">
                       <div class="card-header">
                         <h2 class="card-title">Gestión de Inventario</h2>
@@ -603,10 +954,10 @@
                         <p class="text-center">Cargando productos...</p>
                       </div>
                     </div>
-                  </section>
+                </section>
 
-                  <!-- Modal para registro de producto con código de barras -->
-                  <div id="modalRegistroProducto" class="modal hidden">
+                <!-- Modal para registro de producto con código de barras -->
+                <div id="modalRegistroProducto" class="modal hidden">
                     <div class="modal-content">
                       <div class="card">
                         <div class="card-header">
@@ -629,20 +980,25 @@
                             <small class="text-muted" id="estadoCodigo"></small>
                           </div>
 
-                          <!-- Cámara para escaneo real -->
-                          <div id="camaraContenedor" class="hidden" style="margin-bottom: 1rem;">
-                            <div style="position: relative;">
-                              <video id="videoCamara" width="100%" height="200" style="background: #000;"></video>
-                              <canvas id="canvasEscaneo" style="display: none;"></canvas>
-                              <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 5px;">
-                                <i class="fas fa-camera"></i> Modo Escáner
+                          <!-- Cámara para escaneo REAL -->
+                          <div id="camaraContenedor" class="hidden" style="margin-bottom: 1rem; position: relative;">
+                              <div style="position: relative;">
+                                  <video id="videoCamara" width="100%" height="300"></video>
+                                  <canvas id="canvasEscaneo" style="display: none;"></canvas>
+                                  
+                                  <!-- Overlay de guía para escaneo -->
+                                  <div class="quagga-overlay">
+                                      <div class="scan-line"></div>
+                                      <div class="scanning-indicator">
+                                          <i class="fas fa-camera"></i> ESCANEANDO...
+                                      </div>
+                                  </div>
                               </div>
-                            </div>
-                            <div style="text-align: center; margin-top: 0.5rem;">
-                              <button type="button" class="btn btn-danger btn-sm" onclick="detenerEscaneo()">
-                                <i class="fas fa-stop"></i> Detener Escaneo
-                              </button>
-                            </div>
+                              <div style="text-align: center; margin-top: 0.5rem;">
+                                  <button type="button" class="btn btn-danger btn-sm" onclick="detenerEscaneo()">
+                                      <i class="fas fa-stop"></i> Detener Escaneo
+                                  </button>
+                              </div>
                           </div>
 
                           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
@@ -691,10 +1047,10 @@
                         </form>
                       </div>
                     </div>
-                  </div>
+                </div>
 
-                  <!-- Modal para ajustar stock -->
-                  <div id="modalAjustarStock" class="modal hidden">
+                <!-- Modal para ajustar stock -->
+                <div id="modalAjustarStock" class="modal hidden">
                     <div class="modal-content">
                       <div class="card">
                         <div class="card-header">
@@ -740,39 +1096,7 @@
                         </form>
                       </div>
                     </div>
-                  </div>
-
-                  <style>
-                    .producto-card {
-                      background: white;
-                      border-radius: 8px;
-                      padding: 1.5rem;
-                      margin-bottom: 1rem;
-                      border-left: 4px solid var(--primary);
-                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                    }
-                    
-                    .producto-card.stock-bajo {
-                      border-left-color: var(--danger);
-                      background: #FFF5F5;
-                    }
-                    
-                    .producto-actions {
-                      display: flex;
-                      gap: 0.5rem;
-                      margin-top: 1rem;
-                      flex-wrap: wrap;
-                    }
-                    
-                    .info-grid {
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                      gap: 0.5rem;
-                      margin-top: 0.5rem;
-                    }
-                  </style>
-                
-
+                </div>
 
                 <!-- Inventario Section -->
                 <section id="inventarioSection" class="hidden">
@@ -809,7 +1133,6 @@
         <footer class="footer">
             <p>Sistema de Gestión &copy; 2025 - Multiservicios Sr. Puerto Malaga</p>
         </footer>
-
     </div>
 
     <!-- Scripts -->
@@ -818,6 +1141,10 @@
     <script>
         let usuarioActual = null;
         let carrito = [];
+        let _chartCategorias = null;
+        let _chartTendencia = null;
+        let _chartTopProductos = null;
+        window.quaggaScannerActive = false;
         
         // Login Functionality
         document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -832,7 +1159,7 @@
                         document.getElementById('userName').textContent = usuario.Nombre + ' - ' + usuario.Rol;
                         document.getElementById('loginScreen').classList.add('hidden');
                         document.getElementById('appScreen').classList.remove('hidden');
-                        refreshDashboard();
+                        loadDashboard(); // Usando la función del HTML 1
                         cargarProductosParaVenta();
                         Swal.fire('¡Éxito!', `Bienvenido ${usuario.Nombre}`, 'success');
                     } else {
@@ -873,7 +1200,7 @@
             // Load section-specific data
             switch(sectionName) {
                 case 'dashboard':
-                    refreshDashboard();
+                    loadDashboard(); // Usando la función del HTML 1
                     break;
                 case 'ventas':
                     cargarProductosParaVenta();
@@ -890,41 +1217,101 @@
             }
         }
         
-        // Dashboard Functions
-        function refreshDashboard() {
-            google.script.run.withSuccessHandler(function(estadisticas) {
-                document.getElementById('totalProductos').textContent = estadisticas.totalProductos;
-                document.getElementById('totalVentasHoy').textContent = `S/ ${estadisticas.totalVentasHoy.toFixed(2)}`;
-                document.getElementById('alertasStock').textContent = estadisticas.alertasStock;
-                document.getElementById('productosBajoStock').textContent = estadisticas.productosBajoStock;
-                
-                // Load alerts
-                cargarAlertasDashboard();
-            }).getEstadisticas();
+        // ====== Funciones del Dashboard del HTML 1 ======
+      
+        function getFilters() {
+            const desde = document.getElementById('fDesde')?.value || '';
+            const hasta = document.getElementById('fHasta')?.value || '';
+            const categoria = document.getElementById('fCategoria')?.value || '';
+            const proveedor = document.getElementById('fProveedor')?.value || '';
+            const cliente = document.getElementById('fCliente')?.value || '';
+            const frecuencia = document.getElementById('fFrecuencia')?.value || 'semanal';
+            return { desde, hasta, categoria, proveedor, cliente, frecuencia };
         }
-        
-        function cargarAlertasDashboard() {
-            google.script.run.withSuccessHandler(function(alertas) {
-                const alertasList = document.getElementById('alertasList');
-                alertasList.innerHTML = '';
-                
-                if (alertas.length === 0) {
-                    alertasList.innerHTML = '<p class="text-center text-success">No hay alertas de stock</p>';
-                } else {
-                    alertas.forEach(alerta => {
-                        const alertaDiv = document.createElement('div');
-                        alertaDiv.className = 'cart-item';
-                        alertaDiv.innerHTML = `
-                            <div>
-                                <strong>${alerta.Nombre_Producto}</strong>
-                                <div class="text-danger">Stock: ${alerta.Stock_Actual} (Mínimo: ${alerta.Stock_Minimo})</div>
-                            </div>
-                            <span class="text-danger">Stock bajo</span>
-                        `;
-                        alertasList.appendChild(alertaDiv);
-                    });
-                }
-            }).getAlertasStock();
+
+        function loadDashboard() {
+            const filtros = getFilters();
+            google.script.run
+                .withSuccessHandler(renderDashboard)
+                .withFailureHandler(err => {
+                    console.error('Dashboard error:', err);
+                    Swal.fire('Error', 'No se pudo cargar el dashboard', 'error');
+                })
+                .getDashboardData(filtros);
+        }
+
+        function renderDashboard(data) {
+            // KPIs
+            document.getElementById('kpiVentasDia').textContent = `S/ ${Number(data.kpis.ventasDia || 0).toFixed(2)}`;
+            document.getElementById('kpiIngresosMes').textContent = `S/ ${Number(data.kpis.ingresosMes || 0).toFixed(2)}`;
+            document.getElementById('kpiProductosStock').textContent = Number(data.kpis.productosEnStock || 0);
+            document.getElementById('kpiPorAgotarse').textContent = Number(data.kpis.porAgotarse || 0);
+            document.getElementById('kpiClientes').textContent = Number(data.kpis.clientes || 0);
+            document.getElementById('kpiPendientes').textContent = Number(data.kpis.pedidosPendientes || 0);
+            document.getElementById('kpiEntregados').textContent = Number(data.kpis.pedidosEntregados || 0);
+
+            // Gráficos
+            drawChartCategorias(data.charts.porCategoria || []);
+            drawChartTendencia(data.charts.tendencia || []);
+            drawChartTopProductos(data.charts.topProductos || []);
+
+            // Tablas
+            fillTable('#tblMasVendidos tbody', (data.tablas.masVendidos || []).map(r => ([
+                r.nombre, r.categoria, r.unidades, Number(r.ganancia || 0).toFixed(2)
+            ])));
+            fillTable('#tblBajoStock tbody', (data.tablas.bajoStock || []).map(r => ([
+                r.nombre, r.categoria, `<span class="badge badge-danger">${r.stock}</span>`, r.minimo
+            ])));
+            fillTable('#tblUltimosPedidos tbody', (data.tablas.ultimosPedidos || []).map(r => ([
+                r.fecha, r.cliente, Number(r.monto || 0).toFixed(2), `<span class="badge">${r.estado}</span>`, r.id
+            ])));
+        }
+
+        function fillTable(selector, rows) {
+            const tbody = document.querySelector(selector);
+            if (!tbody) {
+              console.error('No se encontró el elemento:', selector);
+              return;
+            }
+            rows.forEach(r => {
+                const tr = document.createElement('tr');
+                r.forEach(cell => {
+                    const td = document.createElement('td');
+                    td.innerHTML = cell;
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+        }
+
+        function drawChartCategorias(data) {
+            const ctx = document.getElementById('chartCategorias').getContext('2d');
+            if (_chartCategorias) _chartCategorias.destroy();
+            _chartCategorias = new Chart(ctx, {
+                type: 'bar',
+                data: { labels: data.map(x => x.categoria), datasets: [{ label: 'Ventas (S/)', data: data.map(x => x.total) }] },
+                options: { responsive:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } }
+            });
+        }
+
+        function drawChartTendencia(data) {
+            const ctx = document.getElementById('chartTendencia').getContext('2d');
+            if (_chartTendencia) _chartTendencia.destroy();
+            _chartTendencia = new Chart(ctx, {
+                type: 'line',
+                data: { labels: data.map(x => x.label), datasets: [{ label: 'Ingresos (S/)', data: data.map(x => x.total), tension:.3 }] },
+                options: { responsive:true, plugins:{ legend:{ display:false } }, scales:{ y:{ beginAtZero:true } } }
+            });
+        }
+
+        function drawChartTopProductos(data) {
+            const ctx = document.getElementById('chartTopProductos').getContext('2d');
+            if (_chartTopProductos) _chartTopProductos.destroy();
+            _chartTopProductos = new Chart(ctx, {
+                type: 'pie',
+                data: { labels: data.map(x => x.nombre), datasets: [{ label: 'Ventas (S/)', data: data.map(x => x.total) }] },
+                options: { responsive:true }
+            });
         }
         
         // Sales Functions
@@ -1087,7 +1474,7 @@
                             Swal.fire('¡Éxito!', `Venta registrada con ID: ${idVenta}`, 'success');
                             carrito = [];
                             actualizarCarrito();
-                            refreshDashboard();
+                            loadDashboard(); // actualizar KPIs/gráficos
                             document.getElementById('codigoBarras').value = '';
                         })
                         .withFailureHandler(function(error) {
@@ -1112,17 +1499,16 @@
                 
                 productos.forEach(producto => {
                     const stock = parseInt(producto.Stock_Actual) || 0;
-                    const stockClass = stock <= 5 ? 'stock-bajo' : 'stock-normal';
-                    const stockText = stock <= 5 ? 'text-danger' : 'text-success';
+                    const stockClass = stock <= 5 ? 'stock-bajo' : '';
                     
                     const div = document.createElement('div');
-                    div.className = `producto-item ${stockClass}`;
+                    div.className = `producto-venta ${stockClass}`;
                     div.innerHTML = `
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div>
                                 <strong>${producto.Nombre_Producto}</strong>
                                 <div>S/ ${producto.Precio} | Código: ${producto.Codigo_Barras}</div>
-                                <div class="${stockText}">Stock: ${stock}</div>
+                                <div class="${stock <= 5 ? 'text-danger' : 'text-success'}">Stock: ${stock}</div>
                             </div>
                             <button class="btn btn-primary btn-sm" onclick="agregarProductoRapido('${producto.ID_Producto}')">
                                 <i class="fas fa-cart-plus"></i>
@@ -1283,134 +1669,157 @@
             .getCategoriasProductos();
         }
 
+        // === ESCÁNER REAL - REEMPLAZAR FUNCIONES ACTUALES ===
+
+        let escanerActivo = false;
+
         async function iniciarEscaneo() {
-          try {
-            // Solicitar acceso a la cámara
-            streamCamara = await navigator.mediaDevices.getUserMedia({ 
-              video: { 
-                facingMode: 'environment', // Usar cámara trasera
-                width: { ideal: 1280 },
-                height: { ideal: 720 }
-              } 
-            });
-            
-            const video = document.getElementById('videoCamara');
-            video.srcObject = streamCamara;
-            
-            document.getElementById('camaraContenedor').classList.remove('hidden');
-            document.getElementById('btnEscanear').disabled = true;
-            escaneoActivo = true;
-            
-            // Esperar a que el video esté listo
-            video.onloadedmetadata = function() {
-              video.play();
-              // Simular detección (en producción usarías una librería de escaneo)
-              simularDeteccionCodigo();
-            };
-            
-            Swal.fire({
-              title: 'Escáner Activado',
-              html: `
-                <p>Enfoca el código de barras del producto hacia la cámara.</p>
-                <p><strong>Consejos:</strong></p>
-                <ul style="text-align: left;">
-                  <li>Buena iluminación</li>
-                  <li>Enfocar completamente el código</li>
-                  <li>Mantener estable el dispositivo</li>
-                </ul>
-              `,
-              icon: 'info',
-              confirmButtonText: 'Entendido'
-            });
-            
-          } catch (error) {
-            console.error('Error accediendo a la cámara:', error);
-            Swal.fire({
-              title: 'Error de Cámara',
-              text: 'No se pudo acceder a la cámara. Verifica los permisos.',
-              icon: 'error',
-              confirmButtonText: 'Aceptar'
-            });
-            
-            // Fallback: simular escaneo
-            simularEscaneo();
-          }
-        }
+            try {
+                console.log("🔍 Iniciando escáner real...");
+                
+                // Detener escaneo previo si está activo
+                if (window.quaggaScannerActive) {
+                    detenerEscaneo();
+                }
 
-        function simularDeteccionCodigo() {
-          // Simular detección después de 3 segundos
-          setTimeout(() => {
-            if (escaneoActivo && !document.getElementById('codigoBarrasInput').value) {
-              const codigosEjemplo = [
-                '7751234567890', '7751234567891', '7751234567892', 
-                '7751234567893', '7751234567894', '7751234567895'
-              ];
-              
-              const codigoDetectado = codigosEjemplo[Math.floor(Math.random() * codigosEjemplo.length)];
-              document.getElementById('codigoBarrasInput').value = codigoDetectado;
-              verificarCodigoBarras();
-              
-              // Detener escaneo después de detectar
-              detenerEscaneo();
-              Swal.fire({
-                title: 'Código Detectado!',
-                text: `Código: ${codigoDetectado}`,
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
-              });
-            }
-          }, 3000);
-        }
+                const video = document.getElementById('videoCamara');
+                
+                // Mostrar contenedor de cámara
+                document.getElementById('camaraContenedor').classList.remove('hidden');
+                document.getElementById('btnEscanear').disabled = true;
 
-        function simularEscaneo() {
-          document.getElementById('camaraContenedor').classList.remove('hidden');
-          document.getElementById('btnEscanear').disabled = true;
-          escaneoActivo = true;
-          
-          Swal.fire({
-            title: 'Modo Escaneo Simulado',
-            html: `
-              <p>Enfoca el código de barras hacia la cámara simulada.</p>
-              <p><strong>Para probar:</strong></p>
-              <p>Ingresa manualmente un código como: <code>7751234567890</code></p>
-            `,
-            icon: 'info',
-            confirmButtonText: 'Entendido'
-          });
-          
-          // Simular detección después de 3 segundos
-          setTimeout(() => {
-            if (escaneoActivo && !document.getElementById('codigoBarrasInput').value) {
-              const codigosEjemplo = ['7751234567890', '7759876543210', '7755555555555'];
-              const codigoAleatorio = codigosEjemplo[Math.floor(Math.random() * codigosEjemplo.length)];
-              document.getElementById('codigoBarrasInput').value = codigoAleatorio;
-              verificarCodigoBarras();
-              
-              detenerEscaneo();
-              Swal.fire({
-                title: 'Código Simulado!',
-                text: `Código: ${codigoAleatorio}`,
-                icon: 'success',
-                timer: 2000,
-                showConfirmButton: false
-              });
+                // PRIMERO: Obtener acceso a la cámara
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: "environment",
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    } 
+                });
+                
+                // Conectar el stream al video
+                video.srcObject = stream;
+                video.play();
+                
+                // Configurar QuaggaJS para escaneo real
+                await new Promise((resolve, reject) => {
+                    Quagga.init({
+                        inputStream: {
+                            name: "Live",
+                            type: "LiveStream",
+                            target: video,
+                            constraints: {
+                                width: 640,
+                                height: 480,
+                                facingMode: "environment"
+                            }
+                        },
+                        decoder: {
+                            readers: [
+                                "ean_reader",
+                                "ean_8_reader", 
+                                "upc_reader",
+                                "code_128_reader",
+                                "code_39_reader"
+                            ]
+                        },
+                        locator: {
+                            patchSize: "medium",
+                            halfSample: true
+                        }
+                    }, function(err) {
+                        if (err) {
+                            reject(err);
+                            return;
+                        }
+                        resolve();
+                    });
+                });
+
+                console.log('✅ Quagga inicializado correctamente');
+                Quagga.start();
+                window.quaggaScannerActive = true;
+
+                // Detectar códigos de barras
+                Quagga.onDetected(function(result) {
+                    if (result && result.codeResult && result.codeResult.code) {
+                        const codigoDetectado = result.codeResult.code;
+                        console.log('📷 Código detectado:', codigoDetectado);
+                        
+                        // Validar que sea un código numérico (EAN/UPC)
+                        if (/^\d+$/.test(codigoDetectado)) {
+                            document.getElementById('codigoBarrasInput').value = codigoDetectado;
+                            verificarCodigoBarras();
+                            
+                            // Detener escaneo después de detectar
+                            detenerEscaneo();
+                            
+                            Swal.fire({
+                                title: '✅ Código Detectado!',
+                                html: `<strong>Código: ${codigoDetectado}</strong>`,
+                                icon: 'success',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        }
+                    }
+                });
+
+                Swal.fire({
+                    title: 'Escáner Activado',
+                    html: `
+                        <p><strong>Enfoca el código de barras hacia la cámara</strong></p>
+                        <p>El escáner detectará automáticamente cuando enfoques un código.</p>
+                    `,
+                    icon: 'info',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+
+            } catch (error) {
+                console.error('Error en escáner:', error);
+                Swal.fire({
+                    title: 'Error de Cámara',
+                    html: `
+                        <p>No se pudo acceder a la cámara. Verifica:</p>
+                        <ul style="text-align: left;">
+                            <li>📱 Permisos de cámara en el navegador</li>
+                            <li>🔒 Que estés usando HTTPS</li>
+                            <li>📸 Que la cámara no esté siendo usada por otra app</li>
+                        </ul>
+                        <p><small>Error técnico: ${error.message}</small></p>
+                    `,
+                    icon: 'error',
+                    confirmButtonText: 'Entendido'
+                });
+                detenerEscaneo();
             }
-          }, 3000);
         }
 
         function detenerEscaneo() {
-          escaneoActivo = false;
-          
-          // Detener stream de cámara
-          if (streamCamara) {
-            streamCamara.getTracks().forEach(track => track.stop());
-            streamCamara = null;
-          }
-          
-          document.getElementById('camaraContenedor').classList.add('hidden');
-          document.getElementById('btnEscanear').disabled = false;
+            console.log("🛑 Deteniendo escáner...");
+            
+            // Detener Quagga
+            if (window.quaggaScannerActive) {
+                Quagga.stop();
+                Quagga.offDetected();
+                window.quaggaScannerActive = false;
+            }
+            
+            // Ocultar contenedor
+            document.getElementById('camaraContenedor').classList.add('hidden');
+            document.getElementById('btnEscanear').disabled = false;
+            
+            // Detener stream de cámara
+            const video = document.getElementById('videoCamara');
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => {
+                    track.stop();
+                });
+                video.srcObject = null;
+            }
         }
+       
 
         // Verificar código de barras al cambiar
         document.getElementById('codigoBarrasInput').addEventListener('input', function() {
@@ -1518,7 +1927,7 @@
                 
                 cerrarModal('modalRegistroProducto');
                 cargarProductos();
-                refreshDashboard();
+                loadDashboard();
               } else {
                 Swal.fire('Error', result.error, 'error');
               }
@@ -1543,10 +1952,6 @@
             detenerEscaneo();
           }
         });
-
-
-
-
 
         // Alertas
         function cargarAlertas() {
@@ -1575,6 +1980,12 @@
                     lista.appendChild(div);
                 });
             }).getAlertasStock();
+        }
+
+        // Debounce placeholder
+        function debounceBuscarProductos() {
+          // Agregar implementación o eliminar si no se usa
+          buscarProductos(); // Opción simple
         }
     </script>
 </body>
