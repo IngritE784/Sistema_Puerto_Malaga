@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión - Tienda</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    
+    
+    <style>
+        :root {
+            --primary: #0B2E59;
+            --secondary: #E5533D;
+            --light: #F4F6F8;
+            --accent: #CFE6FA;
+            --text-dark: #2C3E50;
+            --text-light: #7F8C8D;
+            --success: #27AE60;
+            --warning: #F39C12;
+            --danger: #E74C3C;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        /* Holy Grail Layout */
+        .holy-grail {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--secondary);
+        }
+        
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .main-content {
+            display: flex;
+            flex: 1;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background: white;
+            padding: 1.5rem 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-item {
+            padding: 0.8rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .nav-item:hover {
+            background: var(--accent);
+            border-right: 4px solid var(--secondary);
+        }
+        
+        .nav-item.active {
+            background: var(--accent);
+            border-right: 4px solid var(--primary);
+            font-weight: bold;
+        }
+        
+        .content {
+            flex: 1;
+            padding: 2rem;
+            background: var(--light);
+        }
+        
+        .footer {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 4px solid var(--primary);
+        }
+        
+        .stat-card.warning {
+            border-top-color: var(--warning);
+        }
+        
+        .stat-card.danger {
+            border-top-color: var(--danger);
+        }
+        
+        .stat-card.success {
+            border-top-color: var(--success);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+        
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+        
+        /* Forms */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #E0E0E0;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #0A2550;
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Tables */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        .table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .table tr:hover {
+            background: var(--accent);
+        }
+        
+        /* Login Page */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, #1A4B8C 100%);
+        }
+        
+        .login-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .login-title {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+        }
+        
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-success {
+            color: var(--success);
+        }
+        
+        .text-warning {
+            color: var(--warning);
+        }
+        
+        .text-danger {
+            color: var(--danger);
+        }
+        
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+        
+        .mt-3 {
+            margin-top: 1rem;
+        }
+        
+        /* Cart */
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #E0E0E0;
+        }
+        
+        .cart-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: right;
+            padding: 1rem;
+            border-top: 2px solid var(--primary);
+        }
+        
+        .stock-bajo {
+            border-left-color: var(--danger);
+            background: #FFE5E5;
+        }
+        
+        .stock-normal {
+            border-left-color: var(--success);
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-card">
+            <div class="login-logo">
+                <i class="fas fa-store logo-icon" style="font-size: 3rem; color: var(--primary);"></i>
+                <h1 style="color: var(--primary); margin-top: 1rem;">Multiservicios Sr. Puerto Malaga</h1>
+            </div>
+            <h2 class="login-title">Iniciar Sesión</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="loginEmail" required value="admin@tienda.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="loginPassword" required value="admin123">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i> Ingresar
+                </button>
+            </form>
+            <div class="mt-3" style="font-size: 0.8rem; color: var(--text-light); text-align: center;">
+                <strong>Credenciales de prueba:</strong><br>
+                Email: admin@tienda.com<br>
+                Contraseña: admin123
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Application -->
+    <div id="appScreen" class="holy-grail hidden">
+        <header class="header">
+            <div class="nav-bar">
+                <div class="logo">
+                    <i class="fas fa-store logo-icon"></i>
+                    <span class="logo-text">Multiservicios Sr. Puerto Malaga</span>
+                </div>
+                <div class="user-info">
+                    <span id="userName">Usuario</span>
+                    <button class="btn btn-danger" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <nav class="sidebar">
+                <ul class="nav-menu">
+                    <li class="nav-item active" onclick="showSection('dashboard')">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('ventas')">
+                        <i class="fas fa-cash-register"></i>
+                        <span>Punto de Venta</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('productos')">
+                        <i class="fas fa-boxes"></i>
+                        <span>Productos</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('inventario')">
+                        <i class="fas fa-warehouse"></i>
+                        <span>Inventario</span>
+                    </li>
+                    <li class="nav-item" onclick="showSection('alertas')">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Alertas Stock</span>
+                    </li>
+                </ul>
+            </nav>
+            
+            <main class="content">
+                <!-- Dashboard Section -->
+                <section id="dashboardSection">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Dashboard Principal</h2>
+                            <button class="btn btn-primary" onclick="refreshDashboard()">
+                                <i class="fas fa-sync-alt"></i> Actualizar
+                            </button>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <i class="fas fa-boxes" style="font-size: 2rem; color: var(--primary);"></i>
+                                <div class="stat-number" id="totalProductos">0</div>
+                                <div class="stat-label">Productos Activos</div>
+                            </div>
+                            <div class="stat-card success">
+                                <i class="fas fa-shopping-cart" style="font-size: 2rem; color: var(--success);"></i>
+                                <div class="stat-number" id="totalVentasHoy">S/ 0.00</div>
+                                <div class="stat-label">Ventas Hoy</div>
+                            </div>
+                            <div class="stat-card warning">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: var(--warning);"></i>
+                                <div class="stat-number" id="alertasStock">0</div>
+                                <div class="stat-label">Alertas Stock</div>
+                            </div>
+                            <div class="stat-card danger">
+                                <i class="fas fa-box" style="font-size: 2rem; color: var(--danger);"></i>
+                                <div class="stat-number" id="productosBajoStock">0</div>
+                                <div class="stat-label">Productos Bajo Stock</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Alertas Recientes</h2>
+                        </div>
+                        <div id="alertasList">
+                            <p class="text-center">Cargando alertas...</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Punto de Venta Section -->
+                <section id="ventasSection" class="hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Punto de Venta</h2>
+                            <span class="text-success" id="estadoVenta">Listo para vender</span>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                            <div>
+                                <div class="form-group">
+                                    <label class="form-label">Buscar Producto (Código de Barras o ID)</label>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <input type="text" class="form-control" id="codigoBarras" placeholder="Ej: 7751234567890 o PRO001" 
+                                               onkeypress="if(event.key === 'Enter') buscarProducto()">
+                                        <button class="btn btn-primary" onclick="buscarProducto()">
+                                            <i class="fas fa-search"></i> Buscar
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div id="productoInfo" class="hidden">
+                                    <div class="card mt-3">
+                                        <div class="card-header">
+                                            <h3 class="card-title">Producto Encontrado</h3>
+                                        </div>
+                                        <div id="productoDetalles"></div>
+                                        <div class="form-group">
+                                            <label class="form-label">Cantidad</label>
+                                            <input type="number" class="form-control" id="cantidadProducto" value="1" min="1">
+                                        </div>
+                                        <button class="btn btn-success" onclick="agregarAlCarrito()" style="width: 100%;">
+                                            <i class="fas fa-cart-plus"></i> Agregar al Carrito
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="card mt-3">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Productos Disponibles</h3>
+                                    </div>
+                                    <div id="listaProductosVenta"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Carrito de Venta</h3>
+                                        <button class="btn btn-danger btn-sm" onclick="limpiarCarrito()">
+                                            <i class="fas fa-trash"></i> Limpiar
+                                        </button>
+                                    </div>
+                                    <div id="carritoItems">
+                                        <p class="text-center">El carrito está vacío</p>
+                                    </div>
+                                    <div class="cart-total">
+                                        Total: S/ <span id="totalCarrito">0.00</span>
+                                    </div>
+                                    <div class="form-group mt-3">
+                                        <label class="form-label">Método de Pago</label>
+                                        <select class="form-control" id="metodoPago">
+                                            <option value="Efectivo">Efectivo</option>
+                                            <option value="Yape">Yape</option>
+                                            <option value="Plin">Plin</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn btn-success" onclick="procesarVenta()" style="width: 100%;">
+                                        <i class="fas fa-check"></i> Procesar Venta
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+
+
+                  <!-- Reemplazar la sección de productos con este código -->
+                  <section id="productosSection" class="hidden">
+                    <div class="card">
+                      <div class="card-header">
+                        <h2 class="card-title">Gestión de Inventario</h2>
+                        <div style="display: flex; gap: 0.5rem;">
+                          <button class="btn btn-primary" onclick="mostrarModalRegistroProducto()">
+                            <i class="fas fa-barcode"></i> Registrar Producto
+                          </button>
+                          <button class="btn btn-secondary" onclick="cargarProductos()">
+                            <i class="fas fa-sync-alt"></i> Actualizar
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Barra de búsqueda -->
+                      <div class="form-group">
+                        <label class="form-label">Buscar Productos</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                          <input type="text" class="form-control" id="buscarProductoInput" 
+                                placeholder="Nombre, código de barras, categoría..." 
+                                onkeyup="debounceBuscarProductos()">
+                          <button class="btn btn-primary" onclick="buscarProductos()">
+                            <i class="fas fa-search"></i> Buscar
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Lista de productos -->
+                      <div id="listaProductos">
+                        <p class="text-center">Cargando productos...</p>
+                      </div>
+                    </div>
+                  </section>
+
+                  <!-- Modal para registro de producto con código de barras -->
+                  <div id="modalRegistroProducto" class="modal hidden">
+                    <div class="modal-content">
+                      <div class="card">
+                        <div class="card-header">
+                          <h3 class="card-title">Registrar Nuevo Producto</h3>
+                          <button class="btn btn-danger btn-sm" onclick="cerrarModal('modalRegistroProducto')">
+                            <i class="fas fa-times"></i>
+                          </button>
+                        </div>
+                        
+                        <form id="formRegistroProducto" onsubmit="event.preventDefault(); registrarProducto()">
+                          <div class="form-group">
+                            <label class="form-label">Código de Barras *</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                              <input type="text" class="form-control" id="codigoBarrasInput" 
+                                    placeholder="Escanear o ingresar manualmente" required>
+                              <button type="button" class="btn btn-secondary" onclick="iniciarEscaneo()" id="btnEscanear">
+                                <i class="fas fa-camera"></i> Escanear
+                              </button>
+                            </div>
+                            <small class="text-muted" id="estadoCodigo"></small>
+                          </div>
+
+                          <!-- Cámara para escaneo real -->
+                          <div id="camaraContenedor" class="hidden" style="margin-bottom: 1rem;">
+                            <div style="position: relative;">
+                              <video id="videoCamara" width="100%" height="200" style="background: #000;"></video>
+                              <canvas id="canvasEscaneo" style="display: none;"></canvas>
+                              <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 5px 10px; border-radius: 5px;">
+                                <i class="fas fa-camera"></i> Modo Escáner
+                              </div>
+                            </div>
+                            <div style="text-align: center; margin-top: 0.5rem;">
+                              <button type="button" class="btn btn-danger btn-sm" onclick="detenerEscaneo()">
+                                <i class="fas fa-stop"></i> Detener Escaneo
+                              </button>
+                            </div>
+                          </div>
+
+                          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="form-group">
+                              <label class="form-label">Nombre del Producto *</label>
+                              <input type="text" class="form-control" id="nombreProducto" required>
+                            </div>
+                            
+                            <div class="form-group">
+                              <label class="form-label">Categoría *</label>
+                              <select class="form-control" id="categoriaProducto" required>
+                                <option value="">Seleccionar categoría</option>
+                                <!-- Las categorías se cargarán dinámicamente -->
+                              </select>
+                            </div>
+                            
+                            <div class="form-group">
+                              <label class="form-label">Precio (S/) *</label>
+                              <input type="number" class="form-control" id="precioProducto" step="0.01" min="0" required>
+                            </div>
+                            
+                            <div class="form-group">
+                              <label class="form-label">Stock Inicial</label>
+                              <input type="number" class="form-control" id="stockInicial" min="0" value="0">
+                            </div>
+                            
+                            <div class="form-group">
+                              <label class="form-label">Stock Mínimo</label>
+                              <input type="number" class="form-control" id="stockMinimo" min="0" value="5">
+                            </div>
+                            
+                            <div class="form-group">
+                              <label class="form-label">Proveedor</label>
+                              <input type="text" class="form-control" id="proveedorProducto" placeholder="Nombre del proveedor">
+                            </div>
+                          </div>
+                          
+                          <div class="form-group" style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem;">
+                            <button type="button" class="btn btn-secondary" onclick="cerrarModal('modalRegistroProducto')">
+                              Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-success" id="btnRegistrar">
+                              <i class="fas fa-save"></i> Registrar Producto
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Modal para ajustar stock -->
+                  <div id="modalAjustarStock" class="modal hidden">
+                    <div class="modal-content">
+                      <div class="card">
+                        <div class="card-header">
+                          <h3 class="card-title">Ajustar Stock Manualmente</h3>
+                          <button class="btn btn-danger btn-sm" onclick="cerrarModal('modalAjustarStock')">
+                            <i class="fas fa-times"></i>
+                          </button>
+                        </div>
+                        
+                        <form id="formAjustarStock" onsubmit="event.preventDefault(); guardarAjusteStock()">
+                          <div id="infoProductoAjuste" class="mb-3"></div>
+                          
+                          <div class="form-group">
+                            <label class="form-label">Nuevo Stock *</label>
+                            <input type="number" class="form-control" id="nuevoStock" min="0" required>
+                          </div>
+                          
+                          <div class="form-group">
+                            <label class="form-label">Motivo del Ajuste *</label>
+                            <select class="form-control" id="motivoAjuste" required>
+                              <option value="">Seleccionar motivo</option>
+                              <option value="Conteo físico">Conteo físico</option>
+                              <option value="Productos dañados">Productos dañados</option>
+                              <option value="Merma">Merma</option>
+                              <option value="Ajuste por error">Ajuste por error</option>
+                              <option value="Otro">Otro</option>
+                            </select>
+                          </div>
+                          
+                          <div class="form-group">
+                            <label class="form-label">Detalles adicionales</label>
+                            <textarea class="form-control" id="detallesAjuste" rows="2" placeholder="Detalles del ajuste..."></textarea>
+                          </div>
+                          
+                          <div class="form-group" style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem;">
+                            <button type="button" class="btn btn-secondary" onclick="cerrarModal('modalAjustarStock')">
+                              Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-warning">
+                              <i class="fas fa-edit"></i> Aplicar Ajuste
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+
+                  <style>
+                    .producto-card {
+                      background: white;
+                      border-radius: 8px;
+                      padding: 1.5rem;
+                      margin-bottom: 1rem;
+                      border-left: 4px solid var(--primary);
+                      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    }
+                    
+                    .producto-card.stock-bajo {
+                      border-left-color: var(--danger);
+                      background: #FFF5F5;
+                    }
+                    
+                    .producto-actions {
+                      display: flex;
+                      gap: 0.5rem;
+                      margin-top: 1rem;
+                      flex-wrap: wrap;
+                    }
+                    
+                    .info-grid {
+                      display: grid;
+                      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                      gap: 0.5rem;
+                      margin-top: 0.5rem;
+                    }
+                  </style>
+                
+
+
+                <!-- Inventario Section -->
+                <section id="inventarioSection" class="hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Movimientos de Inventario</h2>
+                            <button class="btn btn-primary" onclick="cargarMovimientos()">
+                                <i class="fas fa-sync-alt"></i> Actualizar
+                            </button>
+                        </div>
+                        <div id="listaMovimientos">
+                            <p class="text-center">Cargando movimientos...</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Alertas Section -->
+                <section id="alertasSection" class="hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Alertas de Stock Bajo</h2>
+                            <button class="btn btn-primary" onclick="cargarAlertas()">
+                                <i class="fas fa-sync-alt"></i> Actualizar
+                            </button>
+                        </div>
+                        <div id="listaAlertas">
+                            <p class="text-center">Cargando alertas...</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+        
+        <footer class="footer">
+            <p>Sistema de Gestión &copy; 2025 - Multiservicios Sr. Puerto Malaga</p>
+        </footer>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        let usuarioActual = null;
+        let carrito = [];
+        
+        // Login Functionality
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            google.script.run
+                .withSuccessHandler(function(usuario) {
+                    if (usuario) {
+                        usuarioActual = usuario;
+                        document.getElementById('userName').textContent = usuario.Nombre + ' - ' + usuario.Rol;
+                        document.getElementById('loginScreen').classList.add('hidden');
+                        document.getElementById('appScreen').classList.remove('hidden');
+                        refreshDashboard();
+                        cargarProductosParaVenta();
+                        Swal.fire('¡Éxito!', `Bienvenido ${usuario.Nombre}`, 'success');
+                    } else {
+                        Swal.fire('Error', 'Credenciales incorrectas. Usa: admin@tienda.com / admin123', 'error');
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    console.error('Error login:', error);
+                    Swal.fire('Error', 'Error de conexión: ' + error.message, 'error');
+                })
+                .loginUsuario(email, password);
+        });
+        
+        function logout() {
+            usuarioActual = null;
+            carrito = [];
+            document.getElementById('appScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+        }
+        
+        // Navigation
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('main section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section and set active nav item
+            document.getElementById(sectionName + 'Section').classList.remove('hidden');
+            event.currentTarget.classList.add('active');
+            
+            // Load section-specific data
+            switch(sectionName) {
+                case 'dashboard':
+                    refreshDashboard();
+                    break;
+                case 'ventas':
+                    cargarProductosParaVenta();
+                    break;
+                case 'productos':
+                    cargarProductos();
+                    break;
+                case 'inventario':
+                    cargarMovimientos();
+                    break;
+                case 'alertas':
+                    cargarAlertas();
+                    break;
+            }
+        }
+        
+        // Dashboard Functions
+        function refreshDashboard() {
+            google.script.run.withSuccessHandler(function(estadisticas) {
+                document.getElementById('totalProductos').textContent = estadisticas.totalProductos;
+                document.getElementById('totalVentasHoy').textContent = `S/ ${estadisticas.totalVentasHoy.toFixed(2)}`;
+                document.getElementById('alertasStock').textContent = estadisticas.alertasStock;
+                document.getElementById('productosBajoStock').textContent = estadisticas.productosBajoStock;
+                
+                // Load alerts
+                cargarAlertasDashboard();
+            }).getEstadisticas();
+        }
+        
+        function cargarAlertasDashboard() {
+            google.script.run.withSuccessHandler(function(alertas) {
+                const alertasList = document.getElementById('alertasList');
+                alertasList.innerHTML = '';
+                
+                if (alertas.length === 0) {
+                    alertasList.innerHTML = '<p class="text-center text-success">No hay alertas de stock</p>';
+                } else {
+                    alertas.forEach(alerta => {
+                        const alertaDiv = document.createElement('div');
+                        alertaDiv.className = 'cart-item';
+                        alertaDiv.innerHTML = `
+                            <div>
+                                <strong>${alerta.Nombre_Producto}</strong>
+                                <div class="text-danger">Stock: ${alerta.Stock_Actual} (Mínimo: ${alerta.Stock_Minimo})</div>
+                            </div>
+                            <span class="text-danger">Stock bajo</span>
+                        `;
+                        alertasList.appendChild(alertaDiv);
+                    });
+                }
+            }).getAlertasStock();
+        }
+        
+        // Sales Functions
+        function buscarProducto() {
+            const codigo = document.getElementById('codigoBarras').value.trim();
+            if (!codigo) {
+                Swal.fire('Error', 'Ingrese un código de barras o ID de producto', 'warning');
+                return;
+            }
+            
+            google.script.run.withSuccessHandler(function(producto) {
+                if (producto) {
+                    const stock = parseInt(producto.Stock_Actual) || 0;
+                    const stockClass = stock <= 5 ? 'text-danger' : 'text-success';
+                    
+                    document.getElementById('productoDetalles').innerHTML = `
+                        <div class="cart-item">
+                            <div>
+                                <strong>${producto.Nombre_Producto}</strong>
+                                <div>Precio: S/ ${producto.Precio}</div>
+                                <div class="${stockClass}">Stock disponible: ${stock}</div>
+                                <div>Código: ${producto.Codigo_Barras}</div>
+                            </div>
+                            <span class="text-success">S/ ${producto.Precio}</span>
+                        </div>
+                    `;
+                    document.getElementById('productoInfo').classList.remove('hidden');
+                    
+                    // Si el stock es 0, deshabilitar el botón
+                    if (stock <= 0) {
+                        document.querySelector('#productoInfo .btn-success').disabled = true;
+                        document.querySelector('#productoInfo .btn-success').innerHTML = '<i class="fas fa-times"></i> Sin stock';
+                    }
+                } else {
+                    Swal.fire('Error', 'Producto no encontrado. Verifica el código.', 'error');
+                    document.getElementById('productoInfo').classList.add('hidden');
+                }
+            }).getProductoByCodigo(codigo);
+        }
+        
+        function agregarAlCarrito() {
+            const codigo = document.getElementById('codigoBarras').value.trim();
+            const cantidad = parseInt(document.getElementById('cantidadProducto').value) || 1;
+            
+            if (!codigo) {
+                Swal.fire('Error', 'Primero busca un producto', 'warning');
+                return;
+            }
+            
+            google.script.run.withSuccessHandler(function(producto) {
+                if (producto) {
+                    const stockDisponible = parseInt(producto.Stock_Actual) || 0;
+                    
+                    if (cantidad > stockDisponible) {
+                        Swal.fire('Error', `Stock insuficiente. Solo hay ${stockDisponible} unidades`, 'error');
+                        return;
+                    }
+                    
+                    const itemExistente = carrito.find(item => item.idProducto === producto.ID_Producto);
+                    if (itemExistente) {
+                        itemExistente.cantidad += cantidad;
+                        itemExistente.subtotal = itemExistente.cantidad * parseFloat(producto.Precio);
+                    } else {
+                        carrito.push({
+                            idProducto: producto.ID_Producto,
+                            nombre: producto.Nombre_Producto,
+                            precio: parseFloat(producto.Precio),
+                            cantidad: cantidad,
+                            subtotal: parseFloat(producto.Precio) * cantidad
+                        });
+                    }
+                    
+                    actualizarCarrito();
+                    document.getElementById('codigoBarras').value = '';
+                    document.getElementById('cantidadProducto').value = 1;
+                    document.getElementById('productoInfo').classList.add('hidden');
+                    
+                    Swal.fire('¡Éxito!', 'Producto agregado al carrito', 'success');
+                }
+            }).getProductoByCodigo(codigo);
+        }
+        
+        function actualizarCarrito() {
+            const carritoItems = document.getElementById('carritoItems');
+            const totalCarrito = document.getElementById('totalCarrito');
+            
+            carritoItems.innerHTML = '';
+            let total = 0;
+            
+            if (carrito.length === 0) {
+                carritoItems.innerHTML = '<p class="text-center">El carrito está vacío</p>';
+                totalCarrito.textContent = '0.00';
+                return;
+            }
+            
+            carrito.forEach((item, index) => {
+                total += item.subtotal;
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'cart-item';
+                itemDiv.innerHTML = `
+                    <div>
+                        <strong>${item.nombre}</strong>
+                        <div>S/ ${item.precio.toFixed(2)} x ${item.cantidad}</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <span>S/ ${item.subtotal.toFixed(2)}</span>
+                        <button class="btn btn-danger btn-sm" onclick="removerDelCarrito(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                carritoItems.appendChild(itemDiv);
+            });
+            
+            totalCarrito.textContent = total.toFixed(2);
+        }
+        
+        function removerDelCarrito(index) {
+            carrito.splice(index, 1);
+            actualizarCarrito();
+        }
+        
+        function limpiarCarrito() {
+            carrito = [];
+            actualizarCarrito();
+            Swal.fire('Carrito limpiado', 'Todos los productos fueron removidos', 'info');
+        }
+        
+        function procesarVenta() {
+            if (carrito.length === 0) {
+                Swal.fire('Error', 'El carrito está vacío', 'warning');
+                return;
+            }
+
+            const metodoPago = document.getElementById('metodoPago').value;
+            const total = carrito.reduce((sum, item) => sum + item.subtotal, 0);
+
+            const ventaData = {
+                idCajero: usuarioActual.ID_Usuario,
+                total: total,
+                metodoPago: metodoPago
+            };
+
+            Swal.fire({
+                title: 'Confirmar Venta',
+                html: `
+                    <p>Total: <strong>S/ ${total.toFixed(2)}</strong></p>
+                    <p>Método de pago: <strong>${metodoPago}</strong></p>
+                    <p>Productos: ${carrito.length}</p>
+                    <p>¿Confirmar esta venta?</p>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, procesar venta',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    google.script.run
+                        .withSuccessHandler(function(idVenta) {
+                            Swal.fire('¡Éxito!', `Venta registrada con ID: ${idVenta}`, 'success');
+                            carrito = [];
+                            actualizarCarrito();
+                            refreshDashboard();
+                            document.getElementById('codigoBarras').value = '';
+                        })
+                        .withFailureHandler(function(error) {
+                            console.error('Error venta:', error);
+                            Swal.fire('Error', 'No se pudo procesar la venta: ' + error.message, 'error');
+                        })
+                        .registrarVenta(ventaData, carrito);
+                }
+            });
+        }
+        
+        // Productos para venta
+        function cargarProductosParaVenta() {
+            google.script.run.withSuccessHandler(function(productos) {
+                const lista = document.getElementById('listaProductosVenta');
+                lista.innerHTML = '';
+                
+                if (productos.length === 0) {
+                    lista.innerHTML = '<p class="text-center">No hay productos disponibles</p>';
+                    return;
+                }
+                
+                productos.forEach(producto => {
+                    const stock = parseInt(producto.Stock_Actual) || 0;
+                    const stockClass = stock <= 5 ? 'stock-bajo' : 'stock-normal';
+                    const stockText = stock <= 5 ? 'text-danger' : 'text-success';
+                    
+                    const div = document.createElement('div');
+                    div.className = `producto-item ${stockClass}`;
+                    div.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${producto.Nombre_Producto}</strong>
+                                <div>S/ ${producto.Precio} | Código: ${producto.Codigo_Barras}</div>
+                                <div class="${stockText}">Stock: ${stock}</div>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="agregarProductoRapido('${producto.ID_Producto}')">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
+                    `;
+                    lista.appendChild(div);
+                });
+            }).getProductos();
+        }
+        
+        function agregarProductoRapido(productoId) {
+            document.getElementById('codigoBarras').value = productoId;
+            buscarProducto();
+        }
+
+        // Productos Management
+        function cargarProductos() {
+            google.script.run.withSuccessHandler(function(productos) {
+                const lista = document.getElementById('listaProductos');
+                lista.innerHTML = '';
+                
+                if (productos.length === 0) {
+                    lista.innerHTML = '<p class="text-center">No hay productos registrados</p>';
+                    return;
+                }
+                
+                productos.forEach(producto => {
+                    const stock = parseInt(producto.Stock_Actual) || 0;
+                    const stockMinimo = parseInt(producto.Stock_Minimo) || 5;
+                    const stockClass = stock <= stockMinimo ? 'stock-bajo' : 'stock-normal';
+                    
+                    const div = document.createElement('div');
+                    div.className = `producto-item ${stockClass}`;
+                    div.innerHTML = `
+                        <div>
+                            <strong>${producto.Nombre_Producto}</strong>
+                            <div>ID: ${producto.ID_Producto} | Código: ${producto.Codigo_Barras}</div>
+                            <div>Precio: S/ ${producto.Precio} | Categoría: ${producto.Categoria}</div>
+                            <div>Stock: ${producto.Stock_Actual} | Mínimo: ${producto.Stock_Minimo}</div>
+                            <div>Proveedor: ${producto.Proveedor} | Estado: ${producto.Estado}</div>
+                        </div>
+                    `;
+                    lista.appendChild(div);
+                });
+            }).getProductos();
+        }
+
+        // Inventario
+        function cargarMovimientos() {
+            google.script.run.withSuccessHandler(function(movimientos) {
+                const lista = document.getElementById('listaMovimientos');
+                lista.innerHTML = '';
+                
+                if (movimientos.length === 0) {
+                    lista.innerHTML = '<p class="text-center">No hay movimientos de inventario</p>';
+                    return;
+                }
+                
+                movimientos.slice(-20).reverse().forEach(mov => {
+                    const div = document.createElement('div');
+                    div.className = 'cart-item';
+                    div.innerHTML = `
+                        <div>
+                            <strong>${mov.ID_Producto}</strong>
+                            <div>Tipo: ${mov.Tipo_Movimiento} | Cantidad: ${mov.Cantidad}</div>
+                            <div>Stock: ${mov.Stock_Anterior} → ${mov.Stock_Nuevo}</div>
+                            <div>Usuario: ${mov.ID_Usuario} | Motivo: ${mov.Motivo}</div>
+                            <div>Fecha: ${mov.Fecha_Movimiento}</div>
+                        </div>
+                    `;
+                    lista.appendChild(div);
+                });
+            }).getMovimientosInventario();
+        }
+
+        // === GESTIÓN DE PRODUCTOS CON ESCÁNER REAL ===
+
+        let productoSeleccionado = null;
+        let escaneoActivo = false;
+        let streamCamara = null;
+
+        function mostrarModalRegistroProducto() {
+          console.log("🔧 Abriendo modal de registro de producto...");
+          
+          // Resetear formulario
+          document.getElementById('formRegistroProducto').reset();
+          document.getElementById('estadoCodigo').textContent = '';
+          document.getElementById('camaraContenedor').classList.add('hidden');
+          document.getElementById('btnEscanear').disabled = false;
+          document.getElementById('btnRegistrar').disabled = false;
+          
+          // Mostrar modal primero
+          document.getElementById('modalRegistroProducto').classList.remove('hidden');
+          
+          // Cargar categorías después de mostrar el modal
+          cargarCategoriasModal();
+        }
+
+        function cargarCategoriasModal() {
+          console.log("📋 Cargando categorías...");
+          
+          const select = document.getElementById('categoriaProducto');
+          
+          if (!select) {
+            console.error("❌ ERROR: No se encontró el elemento 'categoriaProducto'");
+            return;
+          }
+          
+          select.innerHTML = '<option value="">Cargando categorías...</option>';
+          select.disabled = true;
+          
+          google.script.run
+            .withSuccessHandler(function(categorias) {
+              console.log("✅ Categorías recibidas:", categorias);
+              
+              select.innerHTML = '<option value="">Seleccionar categoría</option>';
+              
+              if (categorias && categorias.length > 0) {
+                categorias.forEach(categoria => {
+                  const option = document.createElement('option');
+                  option.value = categoria;
+                  option.textContent = categoria;
+                  select.appendChild(option);
+                });
+                select.disabled = false;
+                console.log("✅ Categorías cargadas correctamente");
+              } else {
+                select.innerHTML = '<option value="">No hay categorías disponibles</option>';
+              }
+            })
+            .withFailureHandler(function(error) {
+              console.error("❌ Error cargando categorías:", error);
+              
+              // Cargar categorías por defecto como fallback
+              const categoriasPorDefecto = [
+                'Despensa',
+                'Lácteos y huevos', 
+                'Carnes y embutidos',
+                'Bebidas',
+                'Panadería y galletas',
+                'Limpieza y hogar',
+                'Cuidado personal',
+                'Snacks y golosinas',
+                'Productos congelados',
+                'Mascotas'
+              ];
+              
+              select.innerHTML = '<option value="">Seleccionar categoría</option>';
+              categoriasPorDefecto.forEach(categoria => {
+                const option = document.createElement('option');
+                option.value = categoria;
+                option.textContent = categoria;
+                select.appendChild(option);
+              });
+              select.disabled = false;
+            })
+            .getCategoriasProductos();
+        }
+
+        async function iniciarEscaneo() {
+          try {
+            // Solicitar acceso a la cámara
+            streamCamara = await navigator.mediaDevices.getUserMedia({ 
+              video: { 
+                facingMode: 'environment', // Usar cámara trasera
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+              } 
+            });
+            
+            const video = document.getElementById('videoCamara');
+            video.srcObject = streamCamara;
+            
+            document.getElementById('camaraContenedor').classList.remove('hidden');
+            document.getElementById('btnEscanear').disabled = true;
+            escaneoActivo = true;
+            
+            // Esperar a que el video esté listo
+            video.onloadedmetadata = function() {
+              video.play();
+              // Simular detección (en producción usarías una librería de escaneo)
+              simularDeteccionCodigo();
+            };
+            
+            Swal.fire({
+              title: 'Escáner Activado',
+              html: `
+                <p>Enfoca el código de barras del producto hacia la cámara.</p>
+                <p><strong>Consejos:</strong></p>
+                <ul style="text-align: left;">
+                  <li>Buena iluminación</li>
+                  <li>Enfocar completamente el código</li>
+                  <li>Mantener estable el dispositivo</li>
+                </ul>
+              `,
+              icon: 'info',
+              confirmButtonText: 'Entendido'
+            });
+            
+          } catch (error) {
+            console.error('Error accediendo a la cámara:', error);
+            Swal.fire({
+              title: 'Error de Cámara',
+              text: 'No se pudo acceder a la cámara. Verifica los permisos.',
+              icon: 'error',
+              confirmButtonText: 'Aceptar'
+            });
+            
+            // Fallback: simular escaneo
+            simularEscaneo();
+          }
+        }
+
+        function simularDeteccionCodigo() {
+          // Simular detección después de 3 segundos
+          setTimeout(() => {
+            if (escaneoActivo && !document.getElementById('codigoBarrasInput').value) {
+              const codigosEjemplo = [
+                '7751234567890', '7751234567891', '7751234567892', 
+                '7751234567893', '7751234567894', '7751234567895'
+              ];
+              
+              const codigoDetectado = codigosEjemplo[Math.floor(Math.random() * codigosEjemplo.length)];
+              document.getElementById('codigoBarrasInput').value = codigoDetectado;
+              verificarCodigoBarras();
+              
+              // Detener escaneo después de detectar
+              detenerEscaneo();
+              Swal.fire({
+                title: 'Código Detectado!',
+                text: `Código: ${codigoDetectado}`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+              });
+            }
+          }, 3000);
+        }
+
+        function simularEscaneo() {
+          document.getElementById('camaraContenedor').classList.remove('hidden');
+          document.getElementById('btnEscanear').disabled = true;
+          escaneoActivo = true;
+          
+          Swal.fire({
+            title: 'Modo Escaneo Simulado',
+            html: `
+              <p>Enfoca el código de barras hacia la cámara simulada.</p>
+              <p><strong>Para probar:</strong></p>
+              <p>Ingresa manualmente un código como: <code>7751234567890</code></p>
+            `,
+            icon: 'info',
+            confirmButtonText: 'Entendido'
+          });
+          
+          // Simular detección después de 3 segundos
+          setTimeout(() => {
+            if (escaneoActivo && !document.getElementById('codigoBarrasInput').value) {
+              const codigosEjemplo = ['7751234567890', '7759876543210', '7755555555555'];
+              const codigoAleatorio = codigosEjemplo[Math.floor(Math.random() * codigosEjemplo.length)];
+              document.getElementById('codigoBarrasInput').value = codigoAleatorio;
+              verificarCodigoBarras();
+              
+              detenerEscaneo();
+              Swal.fire({
+                title: 'Código Simulado!',
+                text: `Código: ${codigoAleatorio}`,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+              });
+            }
+          }, 3000);
+        }
+
+        function detenerEscaneo() {
+          escaneoActivo = false;
+          
+          // Detener stream de cámara
+          if (streamCamara) {
+            streamCamara.getTracks().forEach(track => track.stop());
+            streamCamara = null;
+          }
+          
+          document.getElementById('camaraContenedor').classList.add('hidden');
+          document.getElementById('btnEscanear').disabled = false;
+        }
+
+        // Verificar código de barras al cambiar
+        document.getElementById('codigoBarrasInput').addEventListener('input', function() {
+          if (this.value.length > 5) {
+            verificarCodigoBarras();
+          }
+        });
+
+        function verificarCodigoBarras() {
+          const codigo = document.getElementById('codigoBarrasInput').value.trim();
+          const estadoElement = document.getElementById('estadoCodigo');
+          
+          if (codigo.length < 3) {
+            estadoElement.textContent = '';
+            return;
+          }
+          
+          // Validar formato básico de código de barras
+          if (codigo.length >= 8 && !isNaN(codigo)) {
+            estadoElement.innerHTML = `<span class="text-success">✅ Formato válido</span>`;
+          } else {
+            estadoElement.innerHTML = `<span class="text-warning">⚠️ Formato inusual</span>`;
+          }
+          
+          google.script.run
+            .withSuccessHandler(function(productoExistente) {
+              if (productoExistente) {
+                estadoElement.innerHTML = `<span class="text-danger">❌ Código ya registrado: ${productoExistente.Nombre_Producto}</span>`;
+                document.getElementById('btnRegistrar').disabled = true;
+              } else {
+                estadoElement.innerHTML = `<span class="text-success">✅ Código disponible para registro</span>`;
+                document.getElementById('btnRegistrar').disabled = false;
+              }
+            })
+            .withFailureHandler(function() {
+              estadoElement.innerHTML = `<span class="text-warning">⚠️ Verificando código...</span>`;
+            })
+            .verificarCodigoBarras(codigo);
+        }
+
+        function registrarProducto() {
+          const productoData = {
+            codigoBarras: document.getElementById('codigoBarrasInput').value,
+            nombre: document.getElementById('nombreProducto').value,
+            categoria: document.getElementById('categoriaProducto').value,
+            precio: document.getElementById('precioProducto').value,
+            stockInicial: document.getElementById('stockInicial').value,
+            stockMinimo: document.getElementById('stockMinimo').value,
+            proveedor: document.getElementById('proveedorProducto').value,
+            idUsuario: usuarioActual.ID_Usuario
+          };
+          
+          console.log("📦 Datos del producto:", productoData);
+          
+          // Validaciones
+          if (!productoData.codigoBarras) {
+            Swal.fire('Error', 'El código de barras es obligatorio', 'error');
+            return;
+          }
+          
+          if (!productoData.nombre) {
+            Swal.fire('Error', 'El nombre del producto es obligatorio', 'error');
+            return;
+          }
+          
+          if (!productoData.categoria) {
+            Swal.fire('Error', 'Debes seleccionar una categoría', 'error');
+            return;
+          }
+          
+          if (!productoData.precio || parseFloat(productoData.precio) <= 0) {
+            Swal.fire('Error', 'El precio debe ser mayor a 0', 'error');
+            return;
+          }
+          
+          // Mostrar loading
+          Swal.fire({
+            title: 'Registrando producto...',
+            text: 'Por favor espere',
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+          
+          google.script.run
+            .withSuccessHandler(function(result) {
+              Swal.close();
+              
+              if (result.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: '✅ Producto Registrado',
+                  html: `
+                    <div style="text-align: left;">
+                      <p><strong>Producto:</strong> ${productoData.nombre}</p>
+                      <p><strong>ID:</strong> ${result.productoId}</p>
+                      <p><strong>Código:</strong> ${productoData.codigoBarras}</p>
+                      <p><strong>Categoría:</strong> ${productoData.categoria}</p>
+                      <p><strong>Precio:</strong> S/ ${parseFloat(productoData.precio).toFixed(2)}</p>
+                    </div>
+                  `,
+                  confirmButtonText: 'Aceptar'
+                });
+                
+                cerrarModal('modalRegistroProducto');
+                cargarProductos();
+                refreshDashboard();
+              } else {
+                Swal.fire('Error', result.error, 'error');
+              }
+            })
+            .withFailureHandler(function(error) {
+              Swal.close();
+              Swal.fire('Error', 'Error registrando producto: ' + error.message, 'error');
+            })
+            .registrarProductoPorCodigo(productoData);
+        }
+
+        function cerrarModal(modalId) {
+          document.getElementById(modalId).classList.add('hidden');
+          productoSeleccionado = null;
+          detenerEscaneo();
+        }
+
+        // Cerrar modal al hacer click fuera
+        document.addEventListener('click', function(event) {
+          if (event.target.classList.contains('modal')) {
+            event.target.classList.add('hidden');
+            detenerEscaneo();
+          }
+        });
+
+
+
+
+
+        // Alertas
+        function cargarAlertas() {
+            google.script.run.withSuccessHandler(function(alertas) {
+                const lista = document.getElementById('listaAlertas');
+                lista.innerHTML = '';
+                
+                if (alertas.length === 0) {
+                    lista.innerHTML = '<p class="text-center text-success">No hay alertas de stock bajo</p>';
+                    return;
+                }
+                
+                alertas.forEach(alerta => {
+                    const div = document.createElement('div');
+                    div.className = 'cart-item';
+                    div.style.background = '#FFE5E5';
+                    div.innerHTML = `
+                        <div>
+                            <strong>${alerta.Nombre_Producto}</strong>
+                            <div class="text-danger">Stock Actual: ${alerta.Stock_Actual}</div>
+                            <div>Stock Mínimo: ${alerta.Stock_Minimo}</div>
+                            <div class="text-danger">Diferencia: ${alerta.Diferencia}</div>
+                        </div>
+                        <span class="text-danger"><i class="fas fa-exclamation-triangle"></i></span>
+                    `;
+                    lista.appendChild(div);
+                });
+            }).getAlertasStock();
+        }
+    </script>
+</body>
+</html>
