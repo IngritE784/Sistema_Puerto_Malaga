@@ -1,5 +1,6 @@
 // ================= Configuración =================
-var SPREADSHEET_ID = '1Rm9IoAmkgYFu4Zs1S5i2M4ssJfKuSufrEJIVJzJiWSs';
+var SPREADSHEET_ID = '1VTF5ChP8eavortE2O8qzm3P3jZe5yRB5jfbKhhiyXs0';
+
 
 // ================= Render HTML ===================
 function doGet() {
@@ -447,35 +448,33 @@ function getMovimientosInventario() {
     // 2. Crear mapas de búsqueda (ID -> Nombre)
     var prodMap = {};
     productos.forEach(function(p) {
-      prodMap[p.ID_Producto] = p.Nombre_Producto || 'Producto desconocido';
+      prodMap[p.ID_Producto] = p.Nombre_Producto || null; // Usa null si está vacío
     });
 
-    // --- MAPA DE USUARIO (LA CLAVE) ---
     var userMap = {};
     usuarios.forEach(function(u) {
-      // Usará el Nombre, y si no existe, usará el Email
-      userMap[u.ID_Usuario] = u.Nombre || u.Email || 'Usuario (Sin Nombre)';
+      userMap[u.ID_Usuario] = u.Nombre || u.Email || null; // Usa null si está vacío
     });
 
     var tipoMap = {};
     tiposMov.forEach(function(t) {
-      tipoMap[t.ID_Tipo] = t.Nombre_Tipo || 'Tipo desconocido';
+      tipoMap[t.ID_Tipo] = t.Nombre_Tipo || null;
     });
 
     var motivoMap = {};
     motivos.forEach(function(m) {
-      motivoMap[m.ID_Motivo] = m.Nombre_Motivo || 'Motivo desconocido';
+      motivoMap[m.ID_Motivo] = m.Nombre_Motivo || null;
     });
 
     // 3. Enriquecer los datos de movimientos
     var movimientosEnriquecidos = movimientos.map(function(m) {
       var mov = JSON.parse(JSON.stringify(m)); 
       
-      mov.Nombre_Producto = prodMap[m.ID_Producto] || '(' + m.ID_Producto + ')';
-      // --- AÑADE EL NOMBRE DEL USUARIO ---
-      mov.Nombre_Usuario = userMap[m.ID_Usuario] || 'Usuario Desconocido'; 
-      mov.Nombre_Tipo = tipoMap[m.ID_Tipo_Movimiento] || '(' + m.ID_Tipo_Movimiento + ')';
-      mov.Nombre_Motivo = motivoMap[m.ID_Motivo] || '(' + m.ID_Motivo + ')';
+      // Asigna el nombre o deja 'undefined' (que el HTML ahora manejará)
+      mov.Nombre_Producto = prodMap[m.ID_Producto];
+      mov.Nombre_Usuario = userMap[m.ID_Usuario]; 
+      mov.Nombre_Tipo = tipoMap[m.ID_Tipo_Movimiento];
+      mov.Nombre_Motivo = motivoMap[m.ID_Motivo];
       
       return mov;
     });
@@ -2069,7 +2068,7 @@ function guardarConfigEnvioReporte(config) {
       } else if (h === 'Hora_Envio') {
           fila[i] = config.horaEnvio;
       } else if (h === 'Activo') {
-          fila[i] = config.activo;
+          fila[i] = config.activo ? 'SI' : 'NO';
       } else if (h === 'Ultimo_Envio' && data.length >= 2) {
           // Ultimo_Envio se mantiene
           fila[i] = data[1][i]; // conservar valor anterior
@@ -2133,37 +2132,56 @@ function actualizarTriggerEnvioDiario(horaStr, activo) {
 
 
 
-
-//AGRAGADO----------------------------------------------------------------------------------------------------
+/**
+ * ESTA ES LA FUNCIÓN CORRECTA PARA ENVIAR EL REPORTE DIARIO.
+ * Reemplaza la que tienes.
+ */
 function enviarReporteDiario() {
   try {
+    Logger.log("Iniciando envío de reporte diario...");
+    
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var sheet = ss.getSheetByName('REPORTE_CONFIG');
-    if (!sheet) return;
-
+    if (!sheet) {
+        Logger.log("Error: No se encontró la hoja REPORTE_CONFIG.");
+        return;
+    }
 
     var data = sheet.getDataRange().getValues();
-    if (data.length < 2) return;
-
+    if (data.length < 2) {
+      Logger.log('Error: REPORTE_CONFIG está vacío. No se puede enviar el reporte.');
+      return; // Sale si no hay configuración
+    }
 
     var headers = data[0];
     var row = data[1];
     var obj = {};
     headers.forEach(function(h, i) { obj[h] = row[i]; });
 
-
-    var activo = String(obj.Activo || '') === 'TRUE' || String(obj.Activo).toLowerCase() === 'si';
-    if (!activo) return;
-
+    // DESPUÉS:
+var valorActivo = obj.Activo;
+var activo = (valorActivo === true || String(valorActivo).toUpperCase() === 'VERDADERO' || String(valorActivo).toUpperCase() === 'TRUE' || String(valorActivo).toLowerCase() === 'si');
+    if (!activo) {
+      Logger.log('Envío diario está inactivo. No se envía reporte.');
+      return; // Sale si no está activo
+    }
 
     var email = obj.Email_Destino;
-    if (!email) return;
+    if (!email) {
+      Logger.log('Error: No hay email configurado en REPORTE_CONFIG.');
+      return; // Sale si no hay email
+    }
 
+    Logger.log('Configuración cargada. Email: ' + email + '. Generando reporte...');
 
-    // Generar reporte (también se registra en la hoja REPORTE)
-    var res = generarReporteDashboard({});
-    if (!res || !res.success) return;
-
+    // Generar reporte (esta función ya guarda en la hoja REPORTE)
+    var res = generarReporteDashboard({}); // Usamos filtros vacíos para el reporte diario
+    if (!res || !res.success) {
+      Logger.log('Error al generar el PDF del dashboard.');
+      return;
+    }
+    
+    Logger.log('Reporte PDF generado. ID de archivo: ' + res.fileId);
 
     var file = DriveApp.getFileById(res.fileId);
     var asunto = 'Reporte diario - Multiservicios Sr. Puerto Malaga';
@@ -2172,26 +2190,27 @@ function enviarReporteDiario() {
       'Archivo: ' + res.nombreArchivo + '\n\n' +
       'Este correo fue generado automáticamente.';
 
-
     MailApp.sendEmail({
       to: email,
       subject: asunto,
       body: cuerpo,
-      attachments: [file.getAs('application/pdf')] // <_ CORREGIDO
+      attachments: [file.getAs('application/pdf')]
     });
 
+    Logger.log('Correo con reporte enviado exitosamente a: ' + email);
 
     // Actualizar Ultimo_Envio
     var idxUlt = headers.indexOf('Ultimo_Envio');
     if (idxUlt >= 0) {
       sheet.getRange(2, idxUlt + 1).setValue(new Date());
-    } // <_ CORREGIDO
-
+    }
 
   } catch (e) {
+    Logger.log('Error fatal en enviarReporteDiario: ' + e.toString());
     console.error('Error enviarReporteDiario:', e);
   }
 }
+
 
 
 //NUEVA FUNCION CIERRE DE CAJA-------------------------------------------------------------------------------------------------
@@ -2327,4 +2346,35 @@ function generarCierreCajaPDF(idUsuario) {
     console.error('Error generarCierreCajaPDF:', error);
     return { success: false, error: error.toString() }; // <_ CORREGIDO
   }
+}
+
+
+/**
+ * ESTA FUNCIÓN ESTÁ DISEÑADA PARA IMPRIMIR MENSAJES EN EL LOG.
+ */
+function PRUEBA_DE_LOG_Y_CUOTA() {
+
+  Logger.log("--- INICIANDO PRUEBA ---");
+
+  try {
+    var cuota = MailApp.getRemainingDailyQuota();
+    Logger.log("Correos restantes para hoy: " + cuota);
+
+    if (cuota > 0) {
+      Logger.log("Tienes cuota. Intentando enviar email...");
+      MailApp.sendEmail(
+        "gpar781+testfinal@gmail.com",
+        "Prueba Final (Log)",
+        "Email de prueba."
+      );
+      Logger.log("Comando de envío de email ejecutado.");
+    } else {
+      Logger.log("ERROR: No tienes cuota (Correos restantes: 0). Debes esperar 24 horas.");
+    }
+
+  } catch (e) {
+    Logger.log("ERROR GRAVE AL INTENTAR ENVIAR: " + e.message);
+  }
+
+  Logger.log("--- PRUEBA TERMINADA ---");
 }
