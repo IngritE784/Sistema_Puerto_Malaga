@@ -2171,28 +2171,40 @@ function cargarMovimientos() {
             const colorClase = esEntrada ? 'text-success' : 'text-danger';
             const cantidadStr = esEntrada ? `+${cantidad}` : `${cantidad}`;
 
-            // --- Lógica para el Motivo ---
+            // --- Lógica de Motivo (Defensiva) ---
             var motivoDisplay = '';
             if (m.Motivo && m.Motivo.toLowerCase().startsWith('venta:')) {
                 motivoDisplay = m.Motivo; // Muestra "Venta: VTA001"
             } else if (m.Motivo) {
                  motivoDisplay = m.Motivo; // Muestra "Ajuste manual: ..."
             } else {
-                motivoDisplay = m.Nombre_Motivo; // Muestra "Ajuste de Sistema"
+                // Fallback: Nombre del motivo, o ID del motivo, o texto genérico
+                motivoDisplay = m.Nombre_Motivo || m.ID_Motivo || 'Ajuste de Sistema';
             }
 
-            // --- HTML final ---
+            // --- Lógica de Nombres (Defensiva) ---
+            // Si m.Nombre_Producto no existe, usa "Producto" como fallback
+            const nombreProd = m.Nombre_Producto || 'Producto';
+            
+            // Si m.Nombre_Tipo no existe, usa el ID (TIPO001) o "Movimiento"
+            const nombreTipo = m.Nombre_Tipo || m.ID_Tipo_Movimiento || 'Movimiento';
+            
+            // Si m.Nombre_Usuario no existe, usa "Usuario"
+            const nombreUser = m.Nombre_Usuario || 'Usuario';
+            
+
+            // --- HTML final (Totalmente Defensivo) ---
             div.innerHTML = `
               <div>
-                <strong>${m.Nombre_Producto} (${m.ID_Producto})</strong>
+                <strong>${nombreProd} (${m.ID_Producto})</strong>
                 
                 <div style="font-weight: bold;" class="${colorClase}">
-                  ${m.Nombre_Tipo} (${cantidadStr} unidades)
+                  ${nombreTipo} (${cantidadStr} unidades)
                 </div>
 
                 <div>Motivo: ${motivoDisplay}</div>
                 
-                <div>Usuario: ${m.Nombre_Usuario} (${m.ID_Usuario})</div> 
+                <div>Usuario: ${nombreUser} (${m.ID_Usuario})</div> 
 
                 <div>Fecha: ${formatearFechaCorta(m.Fecha_Movimiento)}</div>
               </div>
