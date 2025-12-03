@@ -118,6 +118,7 @@
     .content {
       flex: 1;
       padding: 2rem;
+      padding-bottom: 5rem;
       background: var(--light);
     }
 
@@ -338,7 +339,319 @@
       border-bottom: none;
     }
 
-    /* ---------- Elementos de UI (Badges, Filtros, Botones) ---------- */
+    /* ---------- Punto de Venta Moderno ---------- */
+    .pos-container {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .pos-left {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      overflow: hidden;
+    }
+
+    .pos-search-bar {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      border: 1px solid #E8ECF1;
+    }
+
+    .search-input-group {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .search-input-group input {
+      flex: 1;
+      height: 48px;
+      font-size: 1rem;
+      border: 2px solid #E8ECF1;
+      border-radius: 12px;
+      padding: 0 1rem;
+    }
+
+    .search-input-group input:focus {
+      border-color: #5B9BD5;
+      outline: none;
+    }
+
+    .search-input-group button {
+      height: 48px;
+      padding: 0 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .pos-products-grid {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      border: 1px solid #E8ECF1;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .products-grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+
+    .product-card {
+      background: #F8F9FA;
+      border-radius: 12px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+      text-align: center;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .product-card:hover {
+      border-color: #5B9BD5;
+      background: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(91, 155, 213, 0.2);
+    }
+
+    .product-card-name {
+      font-weight: 600;
+      color: #2C3E50;
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .product-card-price {
+      font-size: 1.125rem;
+      color: #27AE60;
+      font-weight: 700;
+    }
+
+    .product-card-stock {
+      font-size: 0.75rem;
+      color: #6C757D;
+      margin-top: 0.25rem;
+    }
+
+    /* Carrito de Venta */
+    .pos-cart {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      border: 1px solid #E8ECF1;
+      display: flex;
+      flex-direction: column;
+      height: auto;
+      min-height: 500px;
+      max-height: 700px;
+    }
+
+    .pos-cart-header {
+      padding: 1.5rem;
+      border-bottom: 2px solid #E8ECF1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .pos-cart-header h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #2C3E50;
+      margin: 0;
+    }
+
+    .pos-cart-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+
+    .cart-item {
+      background: #F8F9FA;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .cart-item:hover {
+      background: #E9ECEF;
+    }
+
+    .cart-item-info {
+      flex: 1;
+    }
+
+    .cart-item-name {
+      font-weight: 600;
+      color: #2C3E50;
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .cart-item-price {
+      color: #6C757D;
+      font-size: 0.75rem;
+    }
+
+    .cart-item-quantity {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: white;
+      border-radius: 8px;
+      padding: 0.25rem;
+    }
+
+    .cart-item-quantity button {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: #E8ECF1;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #495057;
+      transition: all 0.2s ease;
+    }
+
+    .cart-item-quantity button:hover {
+      background: #5B9BD5;
+      color: white;
+    }
+
+    .cart-item-quantity span {
+      min-width: 30px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+
+    .cart-item-subtotal {
+      font-weight: 700;
+      color: #27AE60;
+      font-size: 1rem;
+      min-width: 70px;
+      text-align: right;
+    }
+
+    .cart-item-remove {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: #FFEBEE;
+      color: #E74C3C;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .cart-item-remove:hover {
+      background: #E74C3C;
+      color: white;
+    }
+
+    .pos-cart-summary {
+      padding: 1.5rem;
+      border-top: 2px solid #E8ECF1;
+      background: #F8F9FA;
+    }
+
+    .cart-total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .cart-total-label {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .cart-total-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #27AE60;
+    }
+
+    .cart-payment-method {
+      margin-bottom: 1rem;
+    }
+
+    .cart-payment-method select {
+      width: 100%;
+      height: 48px;
+      border: 2px solid #E8ECF1;
+      border-radius: 12px;
+      padding: 0 1rem;
+      font-size: 1rem;
+      background: white;
+    }
+
+    .pos-cart-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .pos-cart-actions button {
+      flex: 1;
+      height: 56px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .cart-empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #6C757D;
+    }
+
+    .cart-empty-state i {
+      font-size: 4rem;
+      color: #DEE2E6;
+      margin-bottom: 1rem;
+    }
+
+    .cart-empty-state p {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    @media (max-width: 1200px) {
+      .pos-container {
+        grid-template-columns: 1fr;
+      }
+
+      .pos-cart {
+        min-height: 500px;
+      }
+    }
     .badge {
       display: inline-block;
       padding: .2rem .5rem;
@@ -882,76 +1195,79 @@
 
 
         <section id="ventasSection" class="hidden">
-          <div class="card">
-            <div class="card-header">
-              <h2 class="card-title">Punto de Venta</h2>
-              <span class="text-success" id="estadoVenta">Listo para vender</span>
-            </div>
-            <div style="display:grid; grid-template-columns:2fr 1fr; gap:2rem;">
-              <div>
-                <div class="form-group">
-                  <label class="form-label">Buscar Producto (Código de Barras o ID)</label>
-                  <div style="display: flex; gap: 0.5rem;">
-                    <input type="text" class="form-control" id="codigoBarras" placeholder="Ej: 7751234567890 o PRO001"  
-                           onkeypress="if(event.key === 'Enter') buscarProducto()">
-                    <button class="btn btn-primary" type="button" onclick="buscarProducto()">
-                      <i class="fas fa-search"></i> Buscar
-                    </button>
-                    <button class="btn btn-secondary" type="button" onclick="abrirEscanerVenta()">
-                      <i class="fas fa-camera"></i> Escanear
-                    </button>
-                  </div>
-                </div>
-
-
-                <div id="productoInfo" class="hidden">
-                  <div class="card mt-3">
-                    <div class="card-header">
-                      <h3 class="card-title">Producto Encontrado</h3>
-                    </div>
-                    <div id="productoDetalles"></div>
-                    <div class="form-group">
-                      <label class="form-label">Cantidad</label>
-                      <input type="number" class="form-control" id="cantidadProducto" value="1" min="1">
-                    </div>
-                    <button class="btn btn-success" id="btnAgregarCarrito" style="width:100%;">
-                      <i class="fas fa-cart-plus"></i> Agregar al Carrito
-                    </button>
-                  </div>
-                </div>
-
-                <div class="card mt-3">
-                  <div class="card-header">
-                    <h3 class="card-title">Productos Disponibles</h3>
-                  </div>
-                  <div class="productos-grid" id="listaProductosVenta"></div>
+          <div class="pos-container">
+            <!-- Lado Izquierdo: Búsqueda y Productos -->
+            <div class="pos-left">
+              <!-- Barra de Búsqueda -->
+              <div class="pos-search-bar">
+                <div class="search-input-group">
+                  <input 
+                    type="text" 
+                    id="codigoBarras" 
+                    placeholder="🔍 Buscar por código de barras, nombre o ID del producto..."
+                    onkeypress="if(event.key === 'Enter') buscarProducto()">
+                  <button class="btn btn-primary" type="button" onclick="buscarProducto()">
+                    <i class="fas fa-search"></i> Buscar
+                  </button>
+                  <button class="btn btn-secondary" type="button" onclick="abrirEscanerVenta()">
+                    <i class="fas fa-camera"></i> Escanear
+                  </button>
                 </div>
               </div>
 
-              <div>
-                <div class="card">
-                  <div class="card-header">
-                    <h3 class="card-title">Carrito de Venta</h3>
-                    <button class="btn btn-danger btn-sm" id="btnLimpiarCarrito">
-                      <i class="fas fa-trash"></i> Limpiar
-                    </button>
-                  </div>
-                  <div id="carritoItems">
-                    <p class="text-center">El carrito está vacío</p>
-                  </div>
-                  <div class="cart-total">
-                    Total: S/ <span id="totalCarrito">0.00</span>
-                  </div>
-                  <div class="form-group mt-3">
-                    <label class="form-label">Método de Pago</label>
-                    <select class="form-control" id="metodoPago">
-                      <option value="Efectivo">Efectivo</option>
-                      <option value="Yape">Yape</option>
-                      <option value="Plin">Plin</option>
-                    </select>
-                  </div>
-                  <button class="btn btn-success" id="btnProcesarVenta" style="width:100%;">
-                    <i class="fas fa-check"></i> Procesar Venta
+              <!-- Grid de Productos -->
+              <div class="pos-products-grid">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                  <h3 style="font-size: 1.125rem; font-weight: 600; color: #2C3E50; margin: 0;">
+                    <i class="fas fa-box"></i> Productos Disponibles
+                  </h3>
+                  <span id="estadoVenta" style="color: #27AE60; font-size: 0.875rem; font-weight: 600;">
+                    ✅ Listo para vender
+                  </span>
+                </div>
+                <div class="products-grid-container" id="listaProductosVenta">
+                  <p style="text-align: center; color: #6C757D; padding: 2rem;">Cargando productos...</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Lado Derecho: Carrito -->
+            <div class="pos-cart">
+              <div class="pos-cart-header">
+                <h3><i class="fas fa-shopping-cart"></i> Carrito</h3>
+                <button class="btn btn-ghost btn-sm" id="btnLimpiarCarrito" style="color: #E74C3C;">
+                  <i class="fas fa-trash"></i> Limpiar
+                </button>
+              </div>
+
+              <div class="pos-cart-items" id="carritoItems">
+                <div class="cart-empty-state">
+                  <i class="fas fa-shopping-basket"></i>
+                  <p>El carrito está vacío</p>
+                  <p style="font-size: 0.875rem; margin-top: 0.5rem;">Agrega productos para comenzar</p>
+                </div>
+              </div>
+
+              <div class="pos-cart-summary">
+                <div class="cart-total-row">
+                  <span class="cart-total-label">Total:</span>
+                  <span class="cart-total-value">S/ <span id="totalCarrito">0.00</span></span>
+                </div>
+
+                <div class="cart-payment-method">
+                  <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #495057; margin-bottom: 0.5rem;">
+                    Método de Pago
+                  </label>
+                  <select class="form-control" id="metodoPago">
+                    <option value="Efectivo">💵 Efectivo</option>
+                    <option value="Yape">📱 Yape</option>
+                    <option value="Plin">💳 Plin</option>
+                  </select>
+                </div>
+
+                <div class="pos-cart-actions">
+                  <button class="btn btn-success" id="btnProcesarVenta">
+                    <i class="fas fa-check-circle"></i> Procesar Venta
                   </button>
                 </div>
               </div>
@@ -1497,12 +1813,9 @@
       }
 
       // Punto de venta
-      const btnBuscarProducto = document.getElementById('btnBuscarProducto');
-      const btnAgregarCarrito = document.getElementById('btnAgregarCarrito');
       const btnLimpiarCarrito = document.getElementById('btnLimpiarCarrito');
       const btnProcesarVenta = document.getElementById('btnProcesarVenta');
 
-      if (btnBuscarProducto) btnBuscarProducto.addEventListener('click', buscarProducto);
       const codigoBarras = document.getElementById('codigoBarras');
       if (codigoBarras) {
         codigoBarras.addEventListener('keypress', e => {
@@ -1512,7 +1825,6 @@
           }
         });
       }
-      if (btnAgregarCarrito) btnAgregarCarrito.addEventListener('click', agregarAlCarrito);
       if (btnLimpiarCarrito) btnLimpiarCarrito.addEventListener('click', limpiarCarrito);
       if (btnProcesarVenta) btnProcesarVenta.addEventListener('click', procesarVenta);
 
@@ -1886,71 +2198,90 @@
         Swal.fire('Error', 'Ingrese un código de barras o ID de producto', 'warning');
         return;
       }
+      
       google.script.run
         .withSuccessHandler(producto => {
-          if (producto) {
-            const stock = parseInt(producto.Stock_Actual) || 0;
-            const stockClass = stock <= 5 ? 'text-danger' : 'text-success';
-            document.getElementById('productoDetalles').innerHTML = `
-              <div class="cart-item">
-                <div>
-                  <strong>${producto.Nombre_Producto}</strong>
-                  <div>Precio: S/ ${producto.Precio}</div>
-                  <div class="${stockClass}">Stock disponible: ${stock}</div>
-                  <div>Código: ${producto.Codigo_Barras}</div>
-                </div>
-                <span class="text-success">S/ ${producto.Precio}</span>
-              </div>`;
-            document.getElementById('productoInfo').classList.remove('hidden');
-            const btn = document.getElementById('btnAgregarCarrito');
-            if (stock <= 0) {
-              btn.disabled = true;
-              btn.innerHTML = '<i class="fas fa-times"></i> Sin stock';
-            } else {
-              btn.disabled = false;
-              btn.innerHTML = '<i class="fas fa-cart-plus"></i> Agregar al Carrito';
-            }
-          } else {
+          if (!producto) {
             Swal.fire('Error', 'Producto no encontrado. Verifica el código.', 'error');
-            document.getElementById('productoInfo').classList.add('hidden');
-          }
-        })
-        .getProductoByCodigo(codigo);
-    }
-
-    function agregarAlCarrito() {
-      const codigo = document.getElementById('codigoBarras').value.trim();
-      const cantidad = parseInt(document.getElementById('cantidadProducto').value) || 1;
-      if (!codigo) {
-        Swal.fire('Error', 'Primero busca un producto', 'warning');
-        return;
-      }
-      google.script.run
-        .withSuccessHandler(producto => {
-          if (!producto) return;
-          const stockDisponible = parseInt(producto.Stock_Actual) || 0;
-          if (cantidad > stockDisponible) {
-            Swal.fire('Error', `Stock insuficiente. Solo hay ${stockDisponible} unidades`, 'error');
             return;
           }
-          const item = carrito.find(i => i.idProducto === producto.ID_Producto);
-          if (item) {
-            item.cantidad += cantidad;
-            item.subtotal = item.cantidad * parseFloat(producto.Precio);
-          } else {
-            carrito.push({
-              idProducto: producto.ID_Producto,
-              nombre: producto.Nombre_Producto,
-              precio: parseFloat(producto.Precio),
-              cantidad,
-              subtotal: parseFloat(producto.Precio) * cantidad
-            });
+          
+          const stockDisponible = parseInt(producto.Stock_Actual) || 0;
+          if (stockDisponible <= 0) {
+            Swal.fire('Sin stock', 'Este producto no tiene stock disponible', 'warning');
+            return;
           }
-          actualizarCarrito();
-          document.getElementById('codigoBarras').value = '';
-          document.getElementById('cantidadProducto').value = 1;
-          document.getElementById('productoInfo').classList.add('hidden');
-          Swal.fire('¡Éxito!', 'Producto agregado al carrito', 'success');
+          
+          // Preguntar cantidad con un input dialog
+          Swal.fire({
+            title: producto.Nombre_Producto,
+            html: `
+              <div style="text-align: left; padding: 1rem;">
+                <p><strong>Precio:</strong> S/ ${parseFloat(producto.Precio).toFixed(2)}</p>
+                <p><strong>Stock disponible:</strong> ${stockDisponible} unidades</p>
+                <p><strong>Categoría:</strong> ${producto.Categoria || '—'}</p>
+              </div>
+              <input type="number" id="swal-input-cantidad" class="swal2-input" 
+                     value="1" min="1" max="${stockDisponible}" 
+                     placeholder="Cantidad" style="width: 80%; font-size: 1.2rem;">
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-cart-plus"></i> Agregar al carrito',
+            cancelButtonText: 'Cancelar',
+            preConfirm: () => {
+              const cantidad = parseInt(document.getElementById('swal-input-cantidad').value);
+              if (!cantidad || cantidad < 1) {
+                Swal.showValidationMessage('Ingresa una cantidad válida');
+                return false;
+              }
+              if (cantidad > stockDisponible) {
+                Swal.showValidationMessage(`Solo hay ${stockDisponible} unidades disponibles`);
+                return false;
+              }
+              return cantidad;
+            }
+          }).then(result => {
+            if (result.isConfirmed) {
+              const cantidad = result.value;
+              const item = carrito.find(i => i.idProducto === producto.ID_Producto);
+              
+              if (item) {
+                const nuevaCantidad = item.cantidad + cantidad;
+                if (nuevaCantidad > stockDisponible) {
+                  Swal.fire('Stock insuficiente', 
+                    `Ya tienes ${item.cantidad} en el carrito. Solo puedes agregar ${stockDisponible - item.cantidad} más.`, 
+                    'warning');
+                  return;
+                }
+                item.cantidad = nuevaCantidad;
+                item.subtotal = item.cantidad * parseFloat(producto.Precio);
+              } else {
+                carrito.push({
+                  idProducto: producto.ID_Producto,
+                  nombre: producto.Nombre_Producto,
+                  precio: parseFloat(producto.Precio),
+                  cantidad,
+                  subtotal: parseFloat(producto.Precio) * cantidad
+                });
+              }
+              
+              actualizarCarrito();
+              document.getElementById('codigoBarras').value = '';
+              
+              Swal.fire({
+                icon: 'success',
+                title: '¡Agregado!',
+                text: `${cantidad} x ${producto.Nombre_Producto}`,
+                timer: 1500,
+                showConfirmButton: false
+              });
+            }
+          });
+        })
+        .withFailureHandler(err => {
+          console.error('Error al buscar producto:', err);
+          Swal.fire('Error', 'No se pudo buscar el producto', 'error');
         })
         .getProductoByCodigo(codigo);
     }
@@ -1959,30 +2290,68 @@
       const cont = document.getElementById('carritoItems');
       const totalSpan = document.getElementById('totalCarrito');
       cont.innerHTML = '';
+      
       if (carrito.length === 0) {
-        cont.innerHTML = '<p class="text-center">El carrito está vacío</p>';
+        cont.innerHTML = `
+          <div class="cart-empty-state">
+            <i class="fas fa-shopping-basket"></i>
+            <p>El carrito está vacío</p>
+            <p style="font-size: 0.875rem; margin-top: 0.5rem;">Agrega productos para comenzar</p>
+          </div>`;
         totalSpan.textContent = '0.00';
         return;
       }
+      
       let total = 0;
       carrito.forEach((item, idx) => {
         total += item.subtotal;
         const div = document.createElement('div');
         div.className = 'cart-item';
         div.innerHTML = `
-          <div>
-            <strong>${item.nombre}</strong>
-            <div>S/ ${item.precio.toFixed(2)} x ${item.cantidad}</div>
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.nombre}</div>
+            <div class="cart-item-price">S/ ${item.precio.toFixed(2)} c/u</div>
           </div>
-          <div style="display:flex; align-items:center; gap:.5rem;">
-            <span>S/ ${item.subtotal.toFixed(2)}</span>
-            <button class="btn btn-danger btn-sm" onclick="removerDelCarrito(${idx})">
-              <i class="fas fa-trash"></i>
+          <div class="cart-item-quantity">
+            <button onclick="cambiarCantidadCarrito(${idx}, -1)">
+              <i class="fas fa-minus"></i>
             </button>
-          </div>`;
+            <span>${item.cantidad}</span>
+            <button onclick="cambiarCantidadCarrito(${idx}, 1)">
+              <i class="fas fa-plus"></i>
+            </button>
+          </div>
+          <div class="cart-item-subtotal">S/ ${item.subtotal.toFixed(2)}</div>
+          <button class="cart-item-remove" onclick="removerDelCarrito(${idx})">
+            <i class="fas fa-trash"></i>
+          </button>`;
         cont.appendChild(div);
       });
       totalSpan.textContent = total.toFixed(2);
+    }
+
+    function cambiarCantidadCarrito(index, cambio) {
+      if (!carrito[index]) return;
+      
+      const nuevaCantidad = carrito[index].cantidad + cambio;
+      if (nuevaCantidad < 1) {
+        removerDelCarrito(index);
+        return;
+      }
+      
+      // Verificar stock disponible
+      google.script.run
+        .withSuccessHandler(producto => {
+          const stockDisponible = parseInt(producto.Stock_Actual) || 0;
+          if (nuevaCantidad > stockDisponible) {
+            Swal.fire('Stock insuficiente', `Solo hay ${stockDisponible} unidades disponibles`, 'warning');
+            return;
+          }
+          carrito[index].cantidad = nuevaCantidad;
+          carrito[index].subtotal = carrito[index].cantidad * carrito[index].precio;
+          actualizarCarrito();
+        })
+        .getProductoByCodigo(carrito[index].idProducto);
     }
 
     function removerDelCarrito(index) {
@@ -2043,25 +2412,26 @@
           const lista = document.getElementById('listaProductosVenta');
           lista.innerHTML = '';
           if (!productos || productos.length === 0) {
-            lista.innerHTML = '<p class="text-center">No hay productos disponibles</p>';
+            lista.innerHTML = '<p style="text-align: center; color: #6C757D; padding: 2rem;">No hay productos disponibles</p>';
             return;
           }
+          
           productos.forEach(p => {
             const stock = parseInt(p.Stock_Actual) || 0;
-            const stockClass = stock <= 5 ? 'stock-bajo' : '';
             const div = document.createElement('div');
-            div.className = `producto-venta ${stockClass}`;
+            div.className = 'product-card';
+            if (stock > 0) {
+              div.onclick = () => agregarProductoRapido(p.ID_Producto);
+            } else {
+              div.style.opacity = '0.5';
+              div.style.cursor = 'not-allowed';
+            }
+            
             div.innerHTML = `
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div>
-                  <strong>${p.Nombre_Producto}</strong>
-                  <div>S/ ${p.Precio} | Código: ${p.Codigo_Barras}</div>
-                  <div class="${stock <= 5 ? 'text-danger' : 'text-success'}">Stock: ${stock}</div>
-                </div>
-                <button class="btn btn-primary btn-sm" onclick="agregarProductoRapido('${p.ID_Producto}')">
-                  <i class="fas fa-cart-plus"></i>
-                </button>
-              </div>`;
+              <div class="product-card-name">${p.Nombre_Producto}</div>
+              <div class="product-card-price">S/ ${parseFloat(p.Precio).toFixed(2)}</div>
+              <div class="product-card-stock">${stock <= 5 ? '⚠️' : '✅'} Stock: ${stock}</div>
+            `;
             lista.appendChild(div);
           });
         })
@@ -2069,9 +2439,52 @@
     }
 
     function agregarProductoRapido(idProducto) {
-      const input = document.getElementById('codigoBarras');
-      input.value = idProducto;
-      buscarProducto();
+      google.script.run
+        .withSuccessHandler(producto => {
+          if (!producto) {
+            Swal.fire('Error', 'Producto no encontrado', 'error');
+            return;
+          }
+          
+          const stockDisponible = parseInt(producto.Stock_Actual) || 0;
+          if (stockDisponible <= 0) {
+            Swal.fire('Sin stock', 'Este producto no tiene stock disponible', 'warning');
+            return;
+          }
+          
+          const item = carrito.find(i => i.idProducto === producto.ID_Producto);
+          if (item) {
+            if (item.cantidad >= stockDisponible) {
+              Swal.fire('Stock insuficiente', `Solo hay ${stockDisponible} unidades disponibles`, 'warning');
+              return;
+            }
+            item.cantidad += 1;
+            item.subtotal = item.cantidad * parseFloat(producto.Precio);
+          } else {
+            carrito.push({
+              idProducto: producto.ID_Producto,
+              nombre: producto.Nombre_Producto,
+              precio: parseFloat(producto.Precio),
+              cantidad: 1,
+              subtotal: parseFloat(producto.Precio)
+            });
+          }
+          actualizarCarrito();
+          
+          // Feedback visual
+          const toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true
+          });
+          toast.fire({
+            icon: 'success',
+            title: 'Producto agregado'
+          });
+        })
+        .getProductoByCodigo(idProducto);
     }
 
     // ---------- Gestión de Productos e Inventario ----------
