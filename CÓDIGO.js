@@ -55,7 +55,13 @@ function include(filename) {
 
 // ================= Utilidades base =================
 
-
+/**
+ * Lee una hoja de cálculo por nombre y devuelve un array de objetos JavaScript.
+ * Cada objeto representa una fila, y las claves son los encabezados de columna.
+ * Es la función base para interactuar con los datos de Google Sheets.
+ * @param {string} sheetName - Nombre de la hoja a leer
+ * @return {Array<Object>} Array de objetos con los datos de la hoja
+ */
 // Lee una hoja por nombre y devuelve un array de objetos {header: valor}
 function getSheetData(sheetName) {
   try {
