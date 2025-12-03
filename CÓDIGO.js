@@ -1,6 +1,35 @@
 // ================= Configuración =================
 var SPREADSHEET_ID = '1VTF5ChP8eavortE2O8qzm3P3jZe5yRB5jfbKhhiyXs0';
 
+// ================= Funciones de carpetas =================
+/**
+ * Obtiene o crea una carpeta en Drive junto al archivo de Google Sheets
+ * @param {string} nombreCarpeta - Nombre de la carpeta a crear/obtener
+ * @return {Folder} La carpeta de Drive
+ */
+function obtenerOCrearCarpeta(nombreCarpeta) {
+  try {
+    var file = DriveApp.getFileById(SPREADSHEET_ID);
+    var parentFolder = file.getParents().hasNext() 
+      ? file.getParents().next() 
+      : DriveApp.getRootFolder();
+    
+    // Buscar si la carpeta ya existe
+    var carpetas = parentFolder.getFoldersByName(nombreCarpeta);
+    
+    if (carpetas.hasNext()) {
+      return carpetas.next();
+    } else {
+      // Crear la carpeta si no existe
+      return parentFolder.createFolder(nombreCarpeta);
+    }
+  } catch (error) {
+    console.error('Error al obtener/crear carpeta:', error);
+    // En caso de error, devolver la carpeta raíz
+    return DriveApp.getRootFolder();
+  }
+}
+
 
 // ================= Render HTML ===================
 function doGet() {
@@ -1578,11 +1607,13 @@ function generarReporteDashboard() {
 
     doc.saveAndClose();
 
-    // Convertir a PDF
+    // Convertir a PDF y guardar en carpeta específica
+    var carpetaReportes = obtenerOCrearCarpeta('Reportes');
     var docFile = DriveApp.getFileById(doc.getId());
     var pdfBlob = docFile.getAs('application/pdf');
-    var pdfFile = DriveApp.createFile(pdfBlob);
+    var pdfFile = carpetaReportes.createFile(pdfBlob);
     pdfFile.setName(nombreArchivoBase + '.pdf');
+    pdfFile.setDescription('Reporte generado el ' + Utilities.formatDate(hoy, zona, 'dd/MM/yyyy HH:mm'));
     
     // Borrar doc temporal
     docFile.setTrashed(true);
@@ -1722,9 +1753,13 @@ function generarReportePDF(opciones) {
 
   doc.saveAndClose();
   
+  // Convertir a PDF y guardar en carpeta específica
+  var carpetaReportes = obtenerOCrearCarpeta('Reportes');
   var tempDocFile = DriveApp.getFileById(doc.getId());
   var pdfBlob = tempDocFile.getAs('application/pdf');
-  var pdfFile = parentFolder.createFile(pdfBlob).setName(nombreArchivoBase + '.pdf');
+  var pdfFile = carpetaReportes.createFile(pdfBlob);
+  pdfFile.setName(nombreArchivoBase + '.pdf');
+  pdfFile.setDescription('Reporte programado generado el ' + Utilities.formatDate(fechaAhora, tz, 'dd/MM/yyyy HH:mm'));
   
   // Borrar doc temporal
   tempDocFile.setTrashed(true);
@@ -2390,11 +2425,13 @@ function generarCierreCajaPDF(idUsuario) {
     
     doc.saveAndClose();
     
-    // Convertir a PDF
+    // Convertir a PDF y guardar en carpeta específica
+    var carpetaCierres = obtenerOCrearCarpeta('Cierres de Caja');
     var docFile = DriveApp.getFileById(doc.getId());
     var pdfBlob = docFile.getAs('application/pdf');
-    var pdfFile = DriveApp.createFile(pdfBlob);
+    var pdfFile = carpetaCierres.createFile(pdfBlob);
     pdfFile.setName(nombreArchivoBase + '.pdf');
+    pdfFile.setDescription('Cierre de caja generado el ' + Utilities.formatDate(hoy, zona, 'dd/MM/yyyy HH:mm') + ' por ' + (idUsuario || Session.getActiveUser().getEmail()));
     
     // Borrar doc temporal
     docFile.setTrashed(true);
