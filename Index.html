@@ -668,37 +668,6 @@
                 </div>
               </div>
             </div>
-
-            <div class="filters-panel">
-                <div>
-                    <label class="form-label">Desde</label>
-                    <input type="date" class="form-control" id="fDesde">
-                </div>
-                <div>
-                    <label class="form-label">Hasta</label>
-                    <input type="date" class="form-control" id="fHasta">
-                </div>
-                <div>
-                    <label class="form-label">Categoría</label>
-                    <input type="text" class="form-control" id="fCategoria" placeholder="Ej. Bebidas">
-                </div>
-                <div>
-                    <label class="form-label">Proveedor</label>
-                    <input type="text" class="form-control" id="fProveedor" placeholder="Proveedor">
-                </div>
-                <div>
-                    <label class="form-label">Frecuencia</label>
-                    <select id="fFrecuencia" class="form-control">
-                        <option value="semanal">Semanal (7d)</option>
-                        <option value="mensual">Mensual (30d)</option>
-                    </select>
-                </div>
-                <div style="display:flex; align-items:flex-end;">
-                    <button class="btn btn-primary" onclick="loadDashboard()">
-                        <i class="fas fa-filter"></i> Aplicar filtros
-                    </button>
-                </div>
-            </div>
           </div>
 
           <div class="kpi-grid">
@@ -1574,25 +1543,14 @@
     }
 
     // ---------- Lógica del Dashboard ----------
-    function getFilters() {
-        const desde = document.getElementById('fDesde')?.value || '';
-        const hasta = document.getElementById('fHasta')?.value || '';
-        const categoria = document.getElementById('fCategoria')?.value || '';
-        const proveedor = document.getElementById('fProveedor')?.value || '';
-        const frecuencia = document.getElementById('fFrecuencia')?.value || 'semanal';
-        return { desde, hasta, categoria, proveedor, frecuencia };
-    }
-
-
     function loadDashboard() {
-      const filtros = getFilters();
       google.script.run
         .withSuccessHandler(renderDashboard)
         .withFailureHandler(err => {
           console.error('Dashboard error:', err);
           Swal.fire('Error', 'No se pudo cargar el dashboard', 'error');
         })
-        .getDashboardData(filtros);
+        .getDashboardData();
     }
 
     function renderDashboard(data) {

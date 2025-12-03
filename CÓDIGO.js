@@ -1081,9 +1081,8 @@ function _matchFiltroVenta(venta, filtros, detallesVenta, prodMap) {
 
 
 
-function getDashboardData(filtros) {
+function getDashboardData() {
   try {
-    filtros = filtros || {};
 
 
     var productos = getSheetData('PRODUCTO');
@@ -1123,8 +1122,7 @@ function getDashboardData(filtros) {
     // Ventas del día
     var ventasDiaArr = ventas.filter(function (v) {
       var fv = parseFecha(v.FechaHora_Venta);
-      // Filtro optimizado
-      return fv && fv.toDateString() === hoyStr && _matchFiltroVenta(v, filtros, detalles, prodMap);
+      return fv && fv.toDateString() === hoyStr;
     });
     var ventasDia = ventasDiaArr.reduce(function (sum, v) {
       return sum + (parseFloat(v.Total_Venta) || 0);
@@ -1141,9 +1139,7 @@ function getDashboardData(filtros) {
     var ventasMes = ventas.filter(function (v) {
       var fv = parseFecha(v.FechaHora_Venta);
       if (!fv) return false;
-      if (fv < inicioMes || fv > finMes) return false;
-      // Filtro optimizado
-      return _matchFiltroVenta(v, filtros, detalles, prodMap);
+      return fv >= inicioMes && fv <= finMes;
     });
 
 
@@ -1177,16 +1173,12 @@ function getDashboardData(filtros) {
 
     // Pedidos pendientes / entregados (por Estado_Venta)
     var pendientes = ventas.filter(function (v) {
-      // Filtro optimizado
-      if (!_matchFiltroVenta(v, filtros, detalles, prodMap)) return false;
       var est = (v.Estado_Venta || '').toLowerCase();
       return est.indexOf('pend') !== -1;
     }).length;
 
 
     var entregados = ventas.filter(function (v) {
-      // Filtro optimizado
-      if (!_matchFiltroVenta(v, filtros, detalles, prodMap)) return false;
       var est = (v.Estado_Venta || '').toLowerCase();
       return est.indexOf('complet') !== -1 || est.indexOf('entreg') !== -1;
     }).length;
@@ -1198,8 +1190,7 @@ function getDashboardData(filtros) {
       var v = ventas.find(function (vv) {
         return vv.ID_Venta === d.ID_Venta;
       });
-      // Filtro optimizado
-      if (!v || !_matchFiltroVenta(v, filtros, detalles, prodMap)) return;
+      if (!v) return;
 
 
       var p = prodMap[d.ID_Producto];
@@ -1225,8 +1216,8 @@ function getDashboardData(filtros) {
       });
 
 
-    // === Gráfico: tendencia (7 o 30 días) ===
-    var dias = filtros.frecuencia === 'mensual' ? 30 : 7;
+    // === Gráfico: tendencia (7 días) ===
+    var dias = 7;
     var hoy0 = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
     var serie = [];
     for (var i = dias - 1; i >= 0; i--) {
@@ -1239,8 +1230,7 @@ function getDashboardData(filtros) {
       var totalDia = ventas
         .filter(function (v) {
           var fv = parseFecha(v.FechaHora_Venta);
-          // Filtro optimizado
-          return fv && fv.toDateString() === d0.toDateString() && _matchFiltroVenta(v, filtros, detalles, prodMap);
+          return fv && fv.toDateString() === d0.toDateString();
         })
         .reduce(function (sum, v) {
           return sum + (parseFloat(v.Total_Venta) || 0);
@@ -1257,8 +1247,7 @@ function getDashboardData(filtros) {
       var v = ventas.find(function (vv) {
         return vv.ID_Venta === d.ID_Venta;
       });
-      // Filtro optimizado
-      if (!v || !_matchFiltroVenta(v, filtros, detalles, prodMap)) return;
+      if (!v) return;
 
 
       var p = prodMap[d.ID_Producto];
@@ -1288,21 +1277,12 @@ function getDashboardData(filtros) {
 
     // === Resumen Métodos de Pago ===
     var resumenPagos = {};
-    // Re-filtramos ventas (esto es ineficiente, pero sigue tu lógica actual)
-    var ventasFiltradasGeneral = ventas.filter(function(v) { 
-      // Filtro optimizado
-      return _matchFiltroVenta(v, filtros, detalles, prodMap); 
-    });
-    var ventasFiltradasIDs = {};
-    ventasFiltradasGeneral.forEach(function(v) { ventasFiltradasIDs[v.ID_Venta] = true; });
 
     ventasMetodos.forEach(function(vm) {
-      if (ventasFiltradasIDs[vm.ID_Venta]) {
-        var nombreMetodo = metodoMap[vm.ID_Metodo] || 'Desconocido';
-        // Tu hoja VENTA_METODO_PAGO puede tener 'Monto' o 'Monto_Pagado'
-        var monto = parseFloat(vm.Monto_Pagado) || parseFloat(vm.Monto) || 0; 
-        resumenPagos[nombreMetodo] = (resumenPagos[nombreMetodo] || 0) + monto;
-      }
+      var nombreMetodo = metodoMap[vm.ID_Metodo] || 'Desconocido';
+      // Tu hoja VENTA_METODO_PAGO puede tener 'Monto' o 'Monto_Pagado'
+      var monto = parseFloat(vm.Monto_Pagado) || parseFloat(vm.Monto) || 0; 
+      resumenPagos[nombreMetodo] = (resumenPagos[nombreMetodo] || 0) + monto;
     });
 
     var tablaResumenPagos = Object.keys(resumenPagos).map(function(nombre) {
@@ -1319,8 +1299,7 @@ function getDashboardData(filtros) {
       var v = ventas.find(function (vv) {
         return vv.ID_Venta === d.ID_Venta;
       });
-      // Filtro optimizado
-      if (!v || !_matchFiltroVenta(v, filtros, detalles, prodMap)) return;
+      if (!v) return;
 
 
       var p = prodMap[d.ID_Producto];
@@ -1393,10 +1372,6 @@ function getDashboardData(filtros) {
 
     // Últimos pedidos (ventas recientes)
   var ultimosPedidos = ventas
-  .filter(function(v) { 
-    // Filtro optimizado
-    return _matchFiltroVenta(v, filtros, detalles, prodMap); 
-  })
   .map(function(v) {
     return {
       fecha: v.FechaHora_Venta,
