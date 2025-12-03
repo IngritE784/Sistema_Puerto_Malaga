@@ -156,46 +156,100 @@
     /* Stats / KPIs */
     .kpi-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1.25rem;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
     }
 
     .kpi-card {
       background: #fff;
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
       display: flex;
       align-items: center;
-      gap: .9rem;
-      border: 1px solid #eef2f5;
+      justify-content: space-between;
+      gap: 1rem;
+      border: 1px solid #E8ECF1;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .kpi-card.blue {
+      border-left: 4px solid #5B9BD5;
+    }
+
+    .kpi-card.green {
+      border-left: 4px solid #70AD47;
+    }
+
+    .kpi-card.orange {
+      border-left: 4px solid #FFC107;
+    }
+
+    .kpi-card.red {
+      border-left: 4px solid #E74C3C;
+    }
+
+    .kpi-info {
+      flex: 1;
     }
 
     .kpi-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
       display: grid;
       place-items: center;
-      background: var(--accent);
+      font-size: 1.8rem;
+      flex-shrink: 0;
+    }
+
+    .kpi-card.blue .kpi-icon {
+      background: #E3F2FD;
+      color: #5B9BD5;
+    }
+
+    .kpi-card.green .kpi-icon {
+      background: #E8F5E9;
+      color: #70AD47;
+    }
+
+    .kpi-card.orange .kpi-icon {
+      background: #FFF3E0;
+      color: #FFC107;
+    }
+
+    .kpi-card.red .kpi-icon {
+      background: #FFEBEE;
+      color: #E74C3C;
     }
 
     .kpi-title {
-      font-size: .9rem;
-      color: var(--text-light);
+      font-size: 0.875rem;
+      color: #6C757D;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
     }
 
     .kpi-value {
-      font-size: 1.6rem;
+      font-size: 2rem;
       font-weight: 700;
-      color: var(--primary);
+      color: #2C3E50;
+      line-height: 1;
     }
 
     .cards-graphics {
       display: grid;
-      grid-template-columns: 2fr 3fr 2fr;
-      gap: 1rem;
+      grid-template-columns: 1fr 2fr 1fr;
+      gap: 1.2rem;
+      margin-bottom: 2rem;
     }
 
     @media (max-width: 1100px) {
@@ -206,17 +260,22 @@
 
     .chart-card {
       background: #fff;
-      border-radius: 12px;
-      padding: 1rem;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
-      border: 1px solid #eef2f5;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      border: 1px solid #E8ECF1;
+      transition: all 0.3s ease;
+    }
+
+    .chart-card:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
     }
 
     /* ---------- Estilos de Tablas ---------- */
     .tables-grid {
       display: grid;
-      grid-template-columns: 2fr 2fr 3fr;
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.2rem;
     }
 
     @media (max-width: 1100px) {
@@ -228,18 +287,17 @@
     .table-title {
       font-weight: 600;
       color: var(--primary);
-      margin-bottom: .5rem;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
     }
 
     .table-sm {
       width: 100%;
       border-collapse: collapse;
       background: #fff;
-      border-radius: 10px;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
-      border: 1px solid #eef2f5;
-      max-height: 260px;
+      max-height: 320px;
       display: block;
       overflow-y: auto;
     }
@@ -250,20 +308,34 @@
     }
 
     .table-sm th, .table-sm td {
-      padding: .6rem .8rem;
-      border-bottom: 1px solid #eef2f5;
-      font-size: .92rem;
+      padding: 0.875rem 1rem;
+      border-bottom: 1px solid #E8ECF1;
+      font-size: 0.875rem;
+      text-align: left;
     }
 
     .table-sm th {
-      background: #f6f9fc;
-      color: #394a6a;
+      background: #F8F9FA;
+      color: #495057;
       text-transform: uppercase;
-      letter-spacing: .02em;
-      font-size: .78rem;
+      letter-spacing: 0.5px;
+      font-size: 0.75rem;
+      font-weight: 600;
       position: sticky;
       top: 0;
       z-index: 1;
+    }
+
+    .table-sm tbody tr {
+      transition: background-color 0.2s ease;
+    }
+
+    .table-sm tbody tr:hover {
+      background-color: #F8F9FA;
+    }
+
+    .table-sm tbody tr:last-child td {
+      border-bottom: none;
     }
 
     /* ---------- Elementos de UI (Badges, Filtros, Botones) ---------- */
@@ -671,74 +743,68 @@
           </div>
 
           <div class="kpi-grid">
-              <div class="kpi-card">
-                <div class="kpi-icon"><i class="fas fa-shopping-cart"></i></div>
-                <div>
+              <div class="kpi-card blue">
+                <div class="kpi-info">
                   <div class="kpi-title">Ventas del día</div>
                   <div class="kpi-value" id="kpiVentasDia">S/ 0.00</div>
                 </div>
+                <div class="kpi-icon"><i class="fas fa-arrow-up"></i></div>
               </div>
-              <div class="kpi-card">
-                <div class="kpi-icon"><i class="fas fa-money-bill-wave"></i></div>
-                <div>
+              <div class="kpi-card green">
+                <div class="kpi-info">
                   <div class="kpi-title">Ingresos del mes</div>
                   <div class="kpi-value" id="kpiIngresosMes">S/ 0.00</div>
                 </div>
+                <div class="kpi-icon"><i class="fas fa-calendar-alt"></i></div>
               </div>
-              <div class="kpi-card">
-                <div class="kpi-icon"><i class="fas fa-boxes"></i></div>
-                <div>
+              <div class="kpi-card orange">
+                <div class="kpi-info">
                   <div class="kpi-title">Productos en stock</div>
                   <div class="kpi-value" id="kpiProductosStock">0</div>
                 </div>
+                <div class="kpi-icon"><i class="fas fa-box"></i></div>
               </div>
-              <div class="kpi-card">
-                <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                <div>
+              <div class="kpi-card red">
+                <div class="kpi-info">
                   <div class="kpi-title">Por agotarse</div>
                   <div class="kpi-value" id="kpiPorAgotarse">0</div>
                 </div>
+                <div class="kpi-icon"><i class="fas fa-exclamation-triangle"></i></div>
               </div>
             </div>
 
 
           <div class="cards-graphics">
             <div class="chart-card">
-              <div class="card-header" style="padding:0; margin-bottom:.5rem; border-bottom:none;">
-                <h3 class="card-title">Ventas por categoría</h3>
-              </div>
-              <canvas id="chartCategorias" height="180"></canvas>
+              <h3 style="font-size: 1rem; font-weight: 600; color: #2C3E50; margin-bottom: 1rem;">Productos más vendidos</h3>
+              <canvas id="chartTopProductos" height="220"></canvas>
             </div>
             <div class="chart-card">
-              <div class="card-header" style="padding:0; margin-bottom:.5rem; border-bottom:none;">
-                <h3 class="card-title">Tendencia de ventas</h3>
-              </div>
-              <canvas id="chartTendencia" height="180"></canvas>
+              <h3 style="font-size: 1rem; font-weight: 600; color: #2C3E50; margin-bottom: 1rem;">Tendencia de Ventas</h3>
+              <canvas id="chartTendencia" height="220"></canvas>
             </div>
             <div class="chart-card">
-              <div class="card-header" style="padding:0; margin-bottom:.5rem; border-bottom:none;">
-                <h3 class="card-title">Top productos</h3>
-              </div>
-              <canvas id="chartTopProductos" height="180"></canvas>
+              <h3 style="font-size: 1rem; font-weight: 600; color: #2C3E50; margin-bottom: 1rem;">Productos más vendidos</h3>
+              <canvas id="chartCategorias" height="220"></canvas>
             </div>
           </div>
 
-          <div class="tables-grid" style="margin-top:1rem;">
+          <div class="tables-grid">
             <div class="chart-card">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem;">
-                <div class="table-title"><i class="fas fa-trophy"></i> Productos más vendidos</div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <h3 style="font-size: 1rem; font-weight: 600; color: #2C3E50;">Productos más vendidos</h3>
                 <button class="btn btn-ghost btn-sm" onclick="abrirModalTabla('masVendidos')">
-                  <i class="fas fa-expand"></i> Ver todo
+                  <i class="fas fa-expand"></i>
                 </button>
               </div>
 
               <table class="table-sm" id="tblMasVendidos">
                 <thead>
                   <tr>
-                    <th>Producto</th>
-                    <th>Categoría</th>
-                    <th>Unidades</th>
-                    <th>Ganancia (S/)</th>
+                    <th>PRODUCTO</th>
+                    <th>CATEGORÍA</th>
+                    <th>UNIDADES</th>
+                    <th>GANANCIA (S/)</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -746,20 +812,20 @@
             </div>
 
             <div class="chart-card">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem;">
-                <div class="table-title"><i class="fas fa-exclamation-circle"></i> Bajo stock</div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <h3 style="font-size: 1rem; font-weight: 600; color: #2C3E50;">Bajo Stock</h3>
                 <button class="btn btn-ghost btn-sm" onclick="abrirModalTabla('bajoStock')">
-                  <i class="fas fa-expand"></i> Ver todo
+                  <i class="fas fa-expand"></i>
                 </button>
               </div>
 
               <table class="table-sm" id="tblBajoStock">
                 <thead>
                   <tr>
-                    <th>Producto</th>
-                    <th>Categoría</th>
-                    <th>Stock</th>
-                    <th>Mínimo</th>
+                    <th>PRODUCTO</th>
+                    <th>CATEGORÍA</th>
+                    <th>STOCK</th>
+                    <th>MÍNIMO</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -767,16 +833,16 @@
             </div>
 
             <div class="chart-card">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:.5rem;">
-                <div class="table-title"><i class="fas fa-receipt"></i> Últimos pedidos</div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <h3 style="font-size: 1rem; font-weight: 600; color: #2C3E50;">Últimos Pedidos</h3>
                 <button class="btn btn-ghost btn-sm" onclick="abrirModalTabla('ultimosPedidos')">
-                  <i class="fas fa-expand"></i> Ver todo
+                  <i class="fas fa-expand"></i>
                 </button>
               </div>
               <div class="table-sm">
                 <table class="table-sm" id="tblUltimosPedidos">
                   <thead><tr>
-                      <th>Fecha</th><th>Monto (S/)</th><th>Estado</th><th>ID</th>
+                      <th>FECHA</th><th>MONTO (S/)</th><th>ESTADO</th><th>ID</th>
                   </tr></thead>
                   <tbody id="tblUltimosPedidosBody"></tbody>
                 </table>
