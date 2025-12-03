@@ -2646,8 +2646,6 @@
 
 
     function generarReporteDashboardClick() {
-      const filtros = getFilters();
-
       // Mostrar un loading usando SweetAlert
       Swal.fire({
         title: 'Generando reporte...',
@@ -2689,7 +2687,7 @@
             'error'
           );
         })
-        .generarReporteDashboard(filtros);
+        .generarReporteDashboard();
     }
 
 

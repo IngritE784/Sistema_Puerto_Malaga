@@ -997,97 +997,12 @@ function registrarVenta(ventaData, carrito) {
 
 // ============== DASHBOARD NUEVO ==============
 
-
-/**
- * Función auxiliar REFACTORIZADA para verificar si una venta cumple con los filtros.
- * Esta versión es EFICIENTE: no accede al Spreadsheet.
- * Recibe los datos (detalles y productos) como parámetros.
- */
-function _matchFiltroVenta(venta, filtros, detallesVenta, prodMap) {
-  var fechaOk = true, categoriaOk = true, proveedorOk = true;
-
-
-  // 1. Filtro de Rango de fechas
-  if (filtros && (filtros.desde || filtros.hasta)) {
-    var fv = parseFecha(venta.FechaHora_Venta);
-    if (!fv) return false; // Si la venta no tiene fecha válida, no pasa el filtro
-    
-    if (filtros.desde) {
-      var fd = parseFecha(filtros.desde);
-      if (fd && fv < fd) fechaOk = false;
-    }
-    if (filtros.hasta) {
-      var fh = parseFecha(filtros.hasta);
-      if (fh) {
-        fh.setHours(23, 59, 59, 999); // Asegurar que incluya todo el día "hasta"
-        if (fv > fh) fechaOk = false;
-      }
-    }
-  }
-  
-  // Si no pasa el filtro de fecha, no seguir
-  if (!fechaOk) return false;
-
-
-  // 2. Filtros de Categoría o Proveedor
-  // Si no hay filtro de categoría NI de proveedor, la venta pasa.
-  if (!filtros.categoria && !filtros.proveedor) {
-    return true; 
-  }
-
-
-  // Si hay filtros, asumimos que no cumple hasta encontrar un producto que sí
-  categoriaOk = !filtros.categoria; // Si no hay filtro de cat, es true
-  proveedorOk = !filtros.proveedor; // Si no hay filtro de prov, es true
-
-
-  // Buscar los detalles (productos) que pertenecen a ESTA venta
-  var detallesDeEstaVenta = detallesVenta.filter(function(d) {
-    return d.ID_Venta === venta.ID_Venta;
-  });
-
-
-  // Si la venta no tiene detalles, no puede cumplir filtros de producto
-  if (detallesDeEstaVenta.length === 0) {
-      // Si el filtro de cat o prov existe, la venta no pasa
-      if (filtros.categoria || filtros.proveedor) return false;
-  }
-
-
-  // Revisar cada producto de la venta
-  for (var i = 0; i < detallesDeEstaVenta.length; i++) {
-    var d = detallesDeEstaVenta[i];
-    var p = prodMap[d.ID_Producto]; // Obtener info del producto desde el mapa
-    
-    if (p) {
-      // Chequear filtro categoría
-      if (filtros.categoria && p.ID_Categoria === filtros.categoria) {
-        categoriaOk = true;
-      }
-      // Chequear filtro proveedor
-      if (filtros.proveedor && p.ID_Proveedor === filtros.proveedor) {
-        proveedorOk = true;
-      }
-    }
-    
-    // Si ya cumplió ambos, no seguir iterando
-    if (categoriaOk && proveedorOk) break;
-  }
-
-
-  return fechaOk && categoriaOk && proveedorOk;
-}
-
-
-
-
 function getDashboardData() {
   try {
 
-
     var productos = getSheetData('PRODUCTO');
     var ventas = getSheetData('VENTA');
-    var detalles = getSheetData('DETALLE_VENTA'); // <_ Se pasa a _matchFiltroVenta
+    var detalles = getSheetData('DETALLE_VENTA');
     var categorias = getSheetData('CATEGORIA');
     var usuarios = getSheetData('USUARIO');
     var metodosPago = getSheetData('METODO_PAGO');
@@ -1436,126 +1351,248 @@ function getDashboardData() {
 //FUNCION AGREGADA-------------------------------------------------------------------------------------------------
 
 
-function generarReporteDashboard(filtros) {
+function generarReporteDashboard() {
   try {
-    filtros = filtros || {};
-    var datos = getDashboardData(filtros);  // Reutilizamos tu dashboard
-
+    var datos = getDashboardData();
 
     var hoy = new Date();
     var zona = 'America/Lima';
     var nombreArchivoBase = 'Reporte_Tienda_' + Utilities.formatDate(hoy, zona, 'yyyyMMdd_HHmm');
 
-
-    // 1) Crear documento de texto con el contenido del reporte
+    // Crear documento de Google Docs
     var doc = DocumentApp.create(nombreArchivoBase);
     var body = doc.getBody();
+    
+    // Configurar márgenes y estilo general
+    body.setMarginTop(50);
+    body.setMarginBottom(50);
+    body.setMarginLeft(60);
+    body.setMarginRight(60);
+    
+    var style = {};
+    style[DocumentApp.Attribute.FONT_FAMILY] = 'Calibri';
+    style[DocumentApp.Attribute.FONT_SIZE] = 11;
+    body.setAttributes(style);
 
-
-    body.appendParagraph('Reporte de tienda - Multiservicios Sr. Puerto Malaga')
-        .setHeading(DocumentApp.ParagraphHeading.HEADING1);
-
-
-    body.appendParagraph(
-      'Fecha de generación: ' +
-      Utilities.formatDate(hoy, zona, 'dd/MM/yyyy HH:mm')
-    );
+    // Encabezado con borde
+    var titulo = body.appendParagraph('🏪 MULTISERVICIOS SR. PUERTO MALAGA');
+    titulo.setHeading(DocumentApp.ParagraphHeading.HEADING1);
+    titulo.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    titulo.setForegroundColor('#0B2E59');
+    titulo.setBold(true);
+    titulo.setFontSize(20);
+    
+    var subtitulo = body.appendParagraph('REPORTE DE GESTIÓN');
+    subtitulo.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    subtitulo.setForegroundColor('#E5533D');
+    subtitulo.setFontSize(14);
+    subtitulo.setBold(true);
+    
+    body.appendHorizontalRule();
+    body.appendParagraph('');
+    
+    var metaInfo = body.appendParagraph('📅 Fecha de generación: ' + Utilities.formatDate(hoy, zona, 'dd/MM/yyyy HH:mm'));
+    metaInfo.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    metaInfo.setFontSize(10);
+    metaInfo.setForegroundColor('#7f8c8d');
+    
+    body.appendParagraph('');
     body.appendParagraph('');
 
-
-    // Rango de filtros, si se usó
-    var desdeStr = filtros.desde ? Utilities.formatDate(new Date(filtros.desde), zona, 'dd/MM/yyyy') : '';
-    var hastaStr = filtros.hasta ? Utilities.formatDate(new Date(filtros.hasta), zona, 'dd/MM/yyyy') : '';
-    if (desdeStr || hastaStr) {
-      body.appendParagraph('Rango filtrado: ' + (desdeStr || '—') + ' - ' + (hastaStr || '—'));
-      body.appendParagraph('');
-    }
-
-
-    // ===== 1. KPIs =====
-    body.appendParagraph('1. Resumen de indicadores')
-        .setHeading(DocumentApp.ParagraphHeading.HEADING2);
-
-
+    // Sección 1: KPIs
+    var seccion1 = body.appendParagraph('📊 1. RESUMEN DE INDICADORES');
+    seccion1.setHeading(DocumentApp.ParagraphHeading.HEADING2);
+    seccion1.setForegroundColor('#0B2E59');
+    seccion1.setBold(true);
+    seccion1.setFontSize(14);
+    
+    body.appendParagraph('');
+    
     var kpisTable = body.appendTable([
-      ['Indicador',           'Valor'],
-      ['Ventas del día',      'S/ ' + Number(datos.kpis.ventasDia || 0).toFixed(2)],
-      ['Ingresos del mes',    'S/ ' + Number(datos.kpis.ingresosMes || 0).toFixed(2)],
-      ['Productos en stock',  String(datos.kpis.productosEnStock || 0)],
-      ['Por agotarse',        String(datos.kpis.porAgotarse || 0)]
+      ['📌 Indicador', '💰 Valor'],
+      ['🛒 Ventas del día', 'S/ ' + Number(datos.kpis.ventasDia || 0).toFixed(2)],
+      ['💵 Ingresos del mes', 'S/ ' + Number(datos.kpis.ingresosMes || 0).toFixed(2)],
+      ['📦 Productos en stock', String(datos.kpis.productosEnStock || 0)],
+      ['⚠️ Por agotarse', String(datos.kpis.porAgotarse || 0)]
     ]);
-    kpisTable.setBorderWidth(0.5);
-
-
+    
+    // Estilo de la tabla KPIs
+    kpisTable.setBorderWidth(2);
+    kpisTable.setBorderColor('#0B2E59');
+    
+    var headerRow = kpisTable.getRow(0);
+    headerRow.setBackgroundColor('#0B2E59');
+    for (var i = 0; i < headerRow.getNumCells(); i++) {
+      var cell = headerRow.getCell(i);
+      cell.setForegroundColor('#FFFFFF');
+      cell.setBold(true);
+      cell.setPaddingTop(8);
+      cell.setPaddingBottom(8);
+    }
+    
+    // Alternar colores en las filas
+    for (var i = 1; i < kpisTable.getNumRows(); i++) {
+      var row = kpisTable.getRow(i);
+      if (i % 2 === 0) {
+        row.setBackgroundColor('#F8F9FA');
+      }
+      for (var j = 0; j < row.getNumCells(); j++) {
+        row.getCell(j).setPaddingTop(6);
+        row.getCell(j).setPaddingBottom(6);
+        row.getCell(j).setPaddingLeft(8);
+        row.getCell(j).setPaddingRight(8);
+      }
+      // Hacer la columna de valores en negrita
+      row.getCell(1).setBold(true);
+      row.getCell(1).setForegroundColor('#0B2E59');
+    }
+    
+    body.appendParagraph('');
     body.appendParagraph('');
 
-
-    // ===== 2. Productos más vendidos =====
-    body.appendParagraph('2. Productos más vendidos')
-        .setHeading(DocumentApp.ParagraphHeading.HEADING2);
-
+    // Sección 2: Productos más vendidos
+    var seccion2 = body.appendParagraph('🏆 2. PRODUCTOS MÁS VENDIDOS');
+    seccion2.setHeading(DocumentApp.ParagraphHeading.HEADING2);
+    seccion2.setForegroundColor('#0B2E59');
+    seccion2.setBold(true);
+    seccion2.setFontSize(14);
+    
+    body.appendParagraph('');
 
     var masVendidos = datos.tablas.masVendidos || [];
     if (masVendidos.length > 0) {
-      var tv = [['Producto', 'Categoría', 'Unidades', 'Ganancia (S/)']];
+      var ventasData = [['🏷️ Producto', '📂 Categoría', '📊 Unidades', '💵 Ganancia (S/)']];
       masVendidos.forEach(function(r) {
-        tv.push([
+        ventasData.push([
           r.nombre || '',
           r.categoria || '',
           String(r.unidades || 0),
-          Number(r.ganancia || 0).toFixed(2)
+          'S/ ' + Number(r.ganancia || 0).toFixed(2)
         ]);
       });
-      var t2 = body.appendTable(tv);
-      t2.setBorderWidth(0.5);
+      var ventasTable = body.appendTable(ventasData);
+      ventasTable.setBorderWidth(2);
+      ventasTable.setBorderColor('#27AE60');
+      
+      var headerRow = ventasTable.getRow(0);
+      headerRow.setBackgroundColor('#27AE60');
+      for (var i = 0; i < headerRow.getNumCells(); i++) {
+        var cell = headerRow.getCell(i);
+        cell.setForegroundColor('#FFFFFF');
+        cell.setBold(true);
+        cell.setPaddingTop(8);
+        cell.setPaddingBottom(8);
+      }
+      
+      // Estilo para las filas de datos
+      for (var i = 1; i < ventasTable.getNumRows(); i++) {
+        var row = ventasTable.getRow(i);
+        if (i % 2 === 0) {
+          row.setBackgroundColor('#F8F9FA');
+        }
+        for (var j = 0; j < row.getNumCells(); j++) {
+          row.getCell(j).setPaddingTop(6);
+          row.getCell(j).setPaddingBottom(6);
+          row.getCell(j).setPaddingLeft(8);
+          row.getCell(j).setPaddingRight(8);
+        }
+        // Resaltar columna de ganancia
+        row.getCell(3).setBold(true);
+        row.getCell(3).setForegroundColor('#27AE60');
+      }
     } else {
-      body.appendParagraph('No hay datos de ventas en el periodo seleccionado.');
+      var noData = body.appendParagraph('ℹ️ No hay datos de ventas en el periodo seleccionado.');
+      noData.setItalic(true);
+      noData.setForegroundColor('#95A5A6');
     }
 
-
+    body.appendParagraph('');
     body.appendParagraph('');
 
-
-    // ===== 3. Productos con bajo stock =====
-    body.appendParagraph('3. Productos con bajo stock')
-        .setHeading(DocumentApp.ParagraphHeading.HEADING2);
-
+    // Sección 3: Productos con bajo stock
+    var seccion3 = body.appendParagraph('⚠️ 3. PRODUCTOS CON BAJO STOCK');
+    seccion3.setHeading(DocumentApp.ParagraphHeading.HEADING2);
+    seccion3.setForegroundColor('#E74C3C');
+    seccion3.setBold(true);
+    seccion3.setFontSize(14);
+    
+    body.appendParagraph('');
 
     var bajoStock = datos.tablas.bajoStock || [];
     if (bajoStock.length > 0) {
-      var tb = [['Producto', 'Categoría', 'Stock', 'Mínimo']];
+      var stockData = [['🏷️ Producto', '📂 Categoría', '📦 Stock', '⚙️ Mínimo']];
       bajoStock.forEach(function(r) {
-        tb.push([
+        stockData.push([
           r.nombre || '',
           r.categoria || '',
           String(r.stock || 0),
           String(r.minimo || 0)
         ]);
       });
-      var t3 = body.appendTable(tb);
-      t3.setBorderWidth(0.5);
+      var stockTable = body.appendTable(stockData);
+      stockTable.setBorderWidth(2);
+      stockTable.setBorderColor('#E74C3C');
+      
+      var headerRow = stockTable.getRow(0);
+      headerRow.setBackgroundColor('#E74C3C');
+      for (var i = 0; i < headerRow.getNumCells(); i++) {
+        var cell = headerRow.getCell(i);
+        cell.setForegroundColor('#FFFFFF');
+        cell.setBold(true);
+        cell.setPaddingTop(8);
+        cell.setPaddingBottom(8);
+      }
+      
+      // Estilo para las filas de datos
+      for (var i = 1; i < stockTable.getNumRows(); i++) {
+        var row = stockTable.getRow(i);
+        if (i % 2 === 0) {
+          row.setBackgroundColor('#FFEBEE');
+        }
+        for (var j = 0; j < row.getNumCells(); j++) {
+          row.getCell(j).setPaddingTop(6);
+          row.getCell(j).setPaddingBottom(6);
+          row.getCell(j).setPaddingLeft(8);
+          row.getCell(j).setPaddingRight(8);
+        }
+        // Resaltar stock bajo
+        row.getCell(2).setBold(true);
+        row.getCell(2).setForegroundColor('#E74C3C');
+      }
     } else {
-      body.appendParagraph('No hay productos con stock bajo en el periodo seleccionado.');
+      var noData = body.appendParagraph('✅ ¡Excelente! No hay productos con stock bajo.');
+      noData.setItalic(true);
+      noData.setForegroundColor('#27AE60');
     }
-
+    
+    body.appendParagraph('');
+    body.appendParagraph('');
+    body.appendHorizontalRule();
+    
+    // Pie de página
+    var footer = body.appendParagraph('Documento generado automáticamente por el Sistema de Gestión');
+    footer.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    footer.setFontSize(9);
+    footer.setForegroundColor('#95A5A6');
+    footer.setItalic(true);
 
     doc.saveAndClose();
 
-
-    // 2) Convertir a PDF
+    // Convertir a PDF
     var docFile = DriveApp.getFileById(doc.getId());
     var pdfBlob = docFile.getAs('application/pdf');
     var pdfFile = DriveApp.createFile(pdfBlob);
     pdfFile.setName(nombreArchivoBase + '.pdf');
+    
+    // Borrar doc temporal
+    docFile.setTrashed(true);
 
-
-    // 3) Registrar en la hoja REPORTE
+    // Registrar en la hoja REPORTE
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     var repSheet = ss.getSheetByName('REPORTE');
     if (!repSheet) {
       throw new Error('No se encontró la hoja REPORTE');
     }
-
 
     var headers = repSheet.getRange(1, 1, 1, repSheet.getLastColumn()).getValues()[0];
     var nuevaFila = new Array(headers.length).fill('');
@@ -1563,18 +1600,16 @@ function generarReporteDashboard(filtros) {
     var idReporte = 'REP' + String(lastRow).padStart(3, '0');
     var usuario = Session.getActiveUser().getEmail() || '';
 
-
     function setCampo(nombreColumna, valor) {
       var idx = headers.indexOf(nombreColumna);
       if (idx >= 0) nuevaFila[idx] = valor;
     }
 
-
     setCampo('ID_Reporte',       idReporte);
     setCampo('Tipo_Reporte',     'Dashboard');
     setCampo('Fecha_Generacion', hoy);
-    setCampo('Fecha_Desde',      filtros.desde || '');
-    setCampo('Fecha_Hasta',      filtros.hasta || '');
+    setCampo('Fecha_Desde',      '');
+    setCampo('Fecha_Hasta',      '');
     setCampo('Generado_Por',     usuario);
     setCampo('Nivel_Detalle',    'Resumido');
     setCampo('Email_Destino',    '');
@@ -1582,12 +1617,7 @@ function generarReporteDashboard(filtros) {
     setCampo('Nombre_Archivo',   pdfFile.getName());
     setCampo('Origen',           'WebApp');
 
-
     repSheet.appendRow(nuevaFila);
-    
-    // 4. Borrar el Google Doc temporal
-    DriveApp.getFileById(doc.getId()).setTrashed(true);
-
 
     return {
       success: true,
@@ -1596,7 +1626,6 @@ function generarReporteDashboard(filtros) {
       nombreArchivo: pdfFile.getName(),
       url: pdfFile.getUrl()
     };
-
 
   } catch (error) {
     console.error('Error generarReporteDashboard:', error);
@@ -1615,18 +1644,8 @@ function generarReporteDashboard(filtros) {
 // Generar PDF con datos principales del dashboard y registrar en HISTORIAL_REPORTE
 function generarReportePDF(opciones) {
   opciones = opciones || {};
-  var filtrosDashboard = {
-    desde: opciones.desde || '',
-    hasta: opciones.hasta || '',
-    categoria: '',
-    proveedor: '',
-    cliente: '',
-    frecuencia: opciones.frecuencia || 'mensual'
-  };
-
-
-  var dash = getDashboardData(filtrosDashboard);
-
+  
+  var dash = getDashboardData();
 
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   var file = DriveApp.getFileById(SPREADSHEET_ID);
@@ -1634,151 +1653,86 @@ function generarReportePDF(opciones) {
     ? file.getParents().next()
     : DriveApp.getRootFolder();
 
-
   var fechaAhora = new Date();
   var tz = Session.getScriptTimeZone();
-  var fechaStr = Utilities.formatDate(fechaAhora, tz, 'dd/MM/yyyy HH:mm');
+  var nombreArchivoBase = 'Reporte_Tienda_' + Utilities.formatDate(fechaAhora, tz, 'yyyyMMdd_HHmm');
 
-
-  var doc = DocumentApp.create('Reporte_Tienda_Temporal_' + fechaAhora.getTime());
+  // Crear documento
+  var doc = DocumentApp.create('Temp_' + nombreArchivoBase);
   var body = doc.getBody();
-
-
+  
   body.appendParagraph('REPORTE DE TIENDA').setHeading(DocumentApp.ParagraphHeading.TITLE);
-  body.appendParagraph('Multiservicios Sr. Puerto Malaga').setHeading(
-    DocumentApp.ParagraphHeading.HEADING2
-  );
-  body.appendParagraph('Generado: ' + fechaStr);
+  body.appendParagraph('Multiservicios Sr. Puerto Malaga').setHeading(DocumentApp.ParagraphHeading.HEADING2);
+  body.appendParagraph('Generado: ' + Utilities.formatDate(fechaAhora, tz, 'dd/MM/yyyy HH:mm'));
   body.appendParagraph('');
 
-
-  // Rango de fechas del reporte
   if (opciones.desde || opciones.hasta) {
-    body.appendParagraph(
-      'Rango de análisis: ' +
-        (opciones.desde || '—') +
-        '  a  ' +
-        (opciones.hasta || '—')
-    );
+    body.appendParagraph('Rango de análisis: ' + (opciones.desde || '—') + ' a ' + (opciones.hasta || '—'));
     body.appendParagraph('');
   }
 
-
-  // KPIs principales
-  body.appendParagraph('Resumen de indicadores').setHeading(
-    DocumentApp.ParagraphHeading.HEADING3
-  );
-
-
-  var tablaKpi = body.appendTable();
-  tablaKpi.appendTableRow()
-    .appendTableCell('Indicador')
-    .appendTableCell('Valor');
-
-
-  tablaKpi.appendTableRow()
-    .appendTableCell('Ventas del día')
-    .appendTableCell('S/ ' + (dash.kpis.ventasDia || 0).toFixed(2));
-  tablaKpi.appendTableRow()
-    .appendTableCell('Ingresos del mes')
-    .appendTableCell('S/ ' + (dash.kpis.ingresosMes || 0).toFixed(2));
-  tablaKpi.appendTableRow()
-    .appendTableCell('Productos en stock')
-    .appendTableCell(String(dash.kpis.productosEnStock || 0));
-  tablaKpi.appendTableRow()
-    .appendTableCell('Productos por agotarse')
-    .appendTableCell(String(dash.kpis.porAgotarse || 0));
-  tablaKpi.appendTableRow()
-    .appendTableCell('Clientes registrados (rol Cliente)')
-    .appendTableCell(String(dash.kpis.clientes || 0));
-  tablaKpi.appendTableRow()
-    .appendTableCell('Pedidos pendientes')
-    .appendTableCell(String(dash.kpis.pedidosPendientes || 0));
-  tablaKpi.appendTableRow()
-    .appendTableCell('Pedidos entregados/completados')
-    .appendTableCell(String(dash.kpis.pedidosEntregados || 0));
-
-
+  // KPIs
+  body.appendParagraph('Resumen de indicadores').setHeading(DocumentApp.ParagraphHeading.HEADING3);
+  var tablaKpi = body.appendTable([
+    ['Indicador', 'Valor'],
+    ['Ventas del día', 'S/ ' + (dash.kpis.ventasDia || 0).toFixed(2)],
+    ['Ingresos del mes', 'S/ ' + (dash.kpis.ingresosMes || 0).toFixed(2)],
+    ['Productos en stock', String(dash.kpis.productosEnStock || 0)],
+    ['Por agotarse', String(dash.kpis.porAgotarse || 0)]
+  ]);
+  tablaKpi.setBorderWidth(1);
   body.appendParagraph('');
-
 
   // Top productos
-  body.appendParagraph('Top productos más vendidos (por monto generado)').setHeading(
-    DocumentApp.ParagraphHeading.HEADING3
-  );
-
-
+  body.appendParagraph('Top productos más vendidos').setHeading(DocumentApp.ParagraphHeading.HEADING3);
   var topProductos = dash.tablas.masVendidos || [];
   if (topProductos.length > 0) {
-    var tablaTop = body.appendTable();
-    tablaTop.appendTableRow()
-      .appendTableCell('Producto')
-      .appendTableCell('Categoría')
-      .appendTableCell('Unidades')
-      .appendTableCell('Monto (S/)');
-
-
+    var prodData = [['Producto', 'Categoría', 'Unidades', 'Monto (S/)']];
     topProductos.slice(0, 10).forEach(function (p) {
-      tablaTop.appendTableRow()
-        .appendTableCell(p.nombre || '')
-        .appendTableCell(p.categoria || '')
-        .appendTableCell(String(p.unidades || 0))
-        .appendTableCell((p.ganancia || 0).toFixed(2));
+      prodData.push([
+        p.nombre || '',
+        p.categoria || '',
+        String(p.unidades || 0),
+        (p.ganancia || 0).toFixed(2)
+      ]);
     });
+    body.appendTable(prodData).setBorderWidth(1);
   } else {
-    body.appendParagraph('No hay datos de ventas para el periodo analizado.');
+    body.appendParagraph('No hay datos de ventas.');
   }
-
-
   body.appendParagraph('');
 
-
-  // Alertas de stock
-  body.appendParagraph('Productos con stock bajo').setHeading(
-    DocumentApp.ParagraphHeading.HEADING3
-  );
+  // Stock bajo
+  body.appendParagraph('Productos con stock bajo').setHeading(DocumentApp.ParagraphHeading.HEADING3);
   var bajoStock = dash.tablas.bajoStock || [];
   if (bajoStock.length > 0) {
-    var tablaStock = body.appendTable();
-    tablaStock.appendTableRow()
-      .appendTableCell('Producto')
-      .appendTableCell('Categoría')
-      .appendTableCell('Stock')
-      .appendTableCell('Mínimo');
-
-
+    var stockData = [['Producto', 'Categoría', 'Stock', 'Mínimo']];
     bajoStock.forEach(function (p) {
-      tablaStock.appendTableRow()
-        .appendTableCell(p.nombre || '')
-        .appendTableCell(p.categoria || '')
-        .appendTableCell(String(p.stock || 0))
-        .appendTableCell(String(p.minimo || 0));
+      stockData.push([
+        p.nombre || '',
+        p.categoria || '',
+        String(p.stock || 0),
+        String(p.minimo || 0)
+      ]);
     });
+    body.appendTable(stockData).setBorderWidth(1);
   } else {
-    body.appendParagraph('No hay productos con stock por debajo del mínimo.');
+    body.appendParagraph('No hay productos con stock bajo.');
   }
 
-
-  body.appendParagraph('');
-  body.appendParagraph('Fin del reporte.').setItalic(true);
-
-
   doc.saveAndClose();
-
-
-  var pdfBlob = doc.getAs(MimeType.PDF);
-  var nombreArchivo =
-    'Reporte_Tienda_' +
-    Utilities.formatDate(fechaAhora, tz, 'yyyyMMdd_HHmm') +
-    '.pdf';
-  var pdfFile = parentFolder.createFile(pdfBlob).setName(nombreArchivo);
-
+  
+  var tempDocFile = DriveApp.getFileById(doc.getId());
+  var pdfBlob = tempDocFile.getAs('application/pdf');
+  var pdfFile = parentFolder.createFile(pdfBlob).setName(nombreArchivoBase + '.pdf');
+  
+  // Borrar doc temporal
+  tempDocFile.setTrashed(true);
 
   // Registrar en HISTORIAL_REPORTE
   var histSheet = ss.getSheetByName('REPORTE');
   var lastRow = histSheet.getLastRow();
   var idReporte = 'REP' + Utilities.formatString('%04d', lastRow);
-
 
   histSheet.appendRow([
     idReporte,
@@ -1793,10 +1747,6 @@ function generarReportePDF(opciones) {
     pdfFile.getName(),
     opciones.origen || 'Manual'
   ]);
-  
-  // Borrar el Google Doc temporal
-  DriveApp.getFileById(doc.getId()).setTrashed(true);
-
 
   return {
     success: true,
@@ -2150,7 +2100,7 @@ var activo = (valorActivo === true || String(valorActivo).toUpperCase() === 'VER
     Logger.log('Configuración cargada. Email: ' + email + '. Generando reporte...');
 
     // Generar reporte (esta función ya guarda en la hoja REPORTE)
-    var res = generarReporteDashboard({}); // Usamos filtros vacíos para el reporte diario
+    var res = generarReporteDashboard(); // Sin filtros
     if (!res || !res.success) {
       Logger.log('Error al generar el PDF del dashboard.');
       return;
@@ -2192,112 +2142,284 @@ var activo = (valorActivo === true || String(valorActivo).toUpperCase() === 'VER
 
 function generarCierreCajaPDF(idUsuario) {
   try {
-    var zona = 'America/Lima'; // Usar la misma zona
+    var zona = 'America/Lima';
     var hoy = new Date();
     
-    // Filtros: SÓLO HOY
-    var inicioDia = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0);
-    var finDia = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
-
-    var filtros = {
-      desde: inicioDia,
-      hasta: finDia
-    };
-    
-    // 1. Obtener los datos (¡Ahora incluirá resumenPagos!)
-    var datos = getDashboardData(filtros); // <_ CORREGIDO
+    // Obtener datos del dashboard del día
+    var datos = getDashboardData();
     
     var nombreArchivoBase = 'Cierre_Caja_' + Utilities.formatDate(hoy, zona, 'yyyyMMdd_HHmm');
     
-    // 2. Crear el Documento
+    // Crear documento de Google Docs
     var doc = DocumentApp.create(nombreArchivoBase);
     var body = doc.getBody();
     
-    body.appendParagraph('Cierre de Caja - Multiservicios Sr. Puerto Malaga')
-        .setHeading(DocumentApp.ParagraphHeading.HEADING1);
-    body.appendParagraph('Fecha de Cierre: ' + Utilities.formatDate(hoy, zona, 'dd/MM/yyyy HH:mm'));
-    body.appendParagraph('Generado por: ' + (idUsuario || Session.getActiveUser().getEmail()));
-    body.appendParagraph('');
-
-    // 3. Resumen de Ventas (KPIs)
-    body.appendParagraph('1. Resumen de Ventas del Día')
-        .setHeading(DocumentApp.ParagraphHeading.HEADING2);
+    // Configurar márgenes y estilo general
+    body.setMarginTop(50);
+    body.setMarginBottom(50);
+    body.setMarginLeft(60);
+    body.setMarginRight(60);
     
-    var totalVentasDia = (datos.kpis.ventasDia || 0).toFixed(2);
-    body.appendTable([
-      ['Ventas Totales del Día', 'S/ ' + totalVentasDia],
-      ['Pedidos Completados', String(datos.kpis.pedidosEntregados || 0)]
-    ]).setBorderWidth(0.5);
+    var style = {};
+    style[DocumentApp.Attribute.FONT_FAMILY] = 'Calibri';
+    style[DocumentApp.Attribute.FONT_SIZE] = 11;
+    body.setAttributes(style);
+
+    // Encabezado destacado
+    var titulo = body.appendParagraph('🏪 MULTISERVICIOS SR. PUERTO MALAGA');
+    titulo.setHeading(DocumentApp.ParagraphHeading.HEADING1);
+    titulo.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    titulo.setForegroundColor('#0B2E59');
+    titulo.setBold(true);
+    titulo.setFontSize(20);
+    
+    var subtitulo = body.appendParagraph('💰 CIERRE DE CAJA');
+    subtitulo.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    subtitulo.setForegroundColor('#E5533D');
+    subtitulo.setFontSize(16);
+    subtitulo.setBold(true);
+    
+    body.appendHorizontalRule();
+    body.appendParagraph('');
+    
+    var fechaInfo = body.appendParagraph('📅 Fecha de cierre: ' + Utilities.formatDate(hoy, zona, 'dd/MM/yyyy HH:mm'));
+    fechaInfo.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    fechaInfo.setFontSize(11);
+    fechaInfo.setForegroundColor('#2C3E50');
+    
+    var usuarioInfo = body.appendParagraph('👤 Generado por: ' + (idUsuario || Session.getActiveUser().getEmail()));
+    usuarioInfo.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    usuarioInfo.setFontSize(10);
+    usuarioInfo.setForegroundColor('#7F8C8D');
+    
+    body.appendParagraph('');
     body.appendParagraph('');
 
-    // 4. Desglose por Método de Pago (¡NUEVO!)
-    body.appendParagraph('2. Desglose por Método de Pago')
-        .setHeading(DocumentApp.ParagraphHeading.HEADING2);
+    // Sección 1: Resumen de Ventas
+    var seccion1 = body.appendParagraph('📊 1. RESUMEN DE VENTAS DEL DÍA');
+    seccion1.setHeading(DocumentApp.ParagraphHeading.HEADING2);
+    seccion1.setForegroundColor('#0B2E59');
+    seccion1.setBold(true);
+    seccion1.setFontSize(14);
+    
+    body.appendParagraph('');
+    
+    var resumenTable = body.appendTable([
+      ['📌 Concepto', '💰 Valor'],
+      ['💵 Ventas Totales del Día', 'S/ ' + Number(datos.kpis.ventasDia || 0).toFixed(2)],
+      ['✅ Pedidos Completados', String(datos.kpis.pedidosEntregados || 0)]
+    ]);
+    resumenTable.setBorderWidth(2);
+    resumenTable.setBorderColor('#0B2E59');
+    
+    var headerRow = resumenTable.getRow(0);
+    headerRow.setBackgroundColor('#0B2E59');
+    for (var i = 0; i < headerRow.getNumCells(); i++) {
+      var cell = headerRow.getCell(i);
+      cell.setForegroundColor('#FFFFFF');
+      cell.setBold(true);
+      cell.setPaddingTop(8);
+      cell.setPaddingBottom(8);
+    }
+    
+    for (var i = 1; i < resumenTable.getNumRows(); i++) {
+      var row = resumenTable.getRow(i);
+      if (i % 2 === 0) {
+        row.setBackgroundColor('#F8F9FA');
+      }
+      for (var j = 0; j < row.getNumCells(); j++) {
+        row.getCell(j).setPaddingTop(6);
+        row.getCell(j).setPaddingBottom(6);
+        row.getCell(j).setPaddingLeft(8);
+        row.getCell(j).setPaddingRight(8);
+      }
+      row.getCell(1).setBold(true);
+      row.getCell(1).setForegroundColor('#27AE60');
+      row.getCell(1).setFontSize(13);
+    }
+    
+    body.appendParagraph('');
+    body.appendParagraph('');
+
+    // Sección 2: Desglose por Método de Pago
+    var seccion2 = body.appendParagraph('💳 2. DESGLOSE POR MÉTODO DE PAGO');
+    seccion2.setHeading(DocumentApp.ParagraphHeading.HEADING2);
+    seccion2.setForegroundColor('#0B2E59');
+    seccion2.setBold(true);
+    seccion2.setFontSize(14);
+    
+    body.appendParagraph('');
     
     var resumenPagos = datos.tablas.resumenPagos || [];
     if (resumenPagos.length > 0) {
-      var tPagos = [['Método de Pago', 'Total Recaudado (S/)']];
+      var pagosData = [['💳 Método de Pago', '💰 Total Recaudado (S/)']];
       var totalRecaudado = 0;
+      
       resumenPagos.forEach(function(p) {
-        tPagos.push([
+        pagosData.push([
           p.metodo || 'Desconocido',
-          Number(p.total || 0).toFixed(2)
+          'S/ ' + Number(p.total || 0).toFixed(2)
         ]);
         totalRecaudado += (p.total || 0);
-      }); // <_ CORREGIDO
-      // Fila de total
-      tPagos.push(['TOTAL', totalRecaudado.toFixed(2)]);
-      body.appendTable(tPagos).setBorderWidth(0.5); // <_ CORREGIDO
+      });
+      
+      // Agregar fila de total
+      pagosData.push(['🔸 TOTAL RECAUDADO', 'S/ ' + totalRecaudado.toFixed(2)]);
+      
+      var pagosTable = body.appendTable(pagosData);
+      pagosTable.setBorderWidth(2);
+      pagosTable.setBorderColor('#F39C12');
+      
+      var headerRow = pagosTable.getRow(0);
+      headerRow.setBackgroundColor('#F39C12');
+      for (var i = 0; i < headerRow.getNumCells(); i++) {
+        var cell = headerRow.getCell(i);
+        cell.setForegroundColor('#FFFFFF');
+        cell.setBold(true);
+        cell.setPaddingTop(8);
+        cell.setPaddingBottom(8);
+      }
+      
+      for (var i = 1; i < pagosTable.getNumRows() - 1; i++) {
+        var row = pagosTable.getRow(i);
+        if (i % 2 === 0) {
+          row.setBackgroundColor('#FFF9E6');
+        }
+        for (var j = 0; j < row.getNumCells(); j++) {
+          row.getCell(j).setPaddingTop(6);
+          row.getCell(j).setPaddingBottom(6);
+          row.getCell(j).setPaddingLeft(8);
+          row.getCell(j).setPaddingRight(8);
+        }
+        row.getCell(1).setBold(true);
+        row.getCell(1).setForegroundColor('#F39C12');
+      }
+      
+      // Resaltar fila de total
+      var lastRow = pagosTable.getRow(pagosTable.getNumRows() - 1);
+      lastRow.setBackgroundColor('#0B2E59');
+      lastRow.setForegroundColor('#FFFFFF');
+      lastRow.setBold(true);
+      for (var i = 0; i < lastRow.getNumCells(); i++) {
+        lastRow.getCell(i).setForegroundColor('#FFFFFF');
+        lastRow.getCell(i).setPaddingTop(10);
+        lastRow.getCell(i).setPaddingBottom(10);
+        lastRow.getCell(i).setFontSize(13);
+      }
     } else {
-      body.appendParagraph('No se registraron pagos en el día.');
+      var noData = body.appendParagraph('ℹ️ No se registraron pagos en el día.');
+      noData.setItalic(true);
+      noData.setForegroundColor('#95A5A6');
     }
+    
+    body.appendParagraph('');
     body.appendParagraph('');
 
-    // 5. Productos más vendidos
-    body.appendParagraph('3. Productos Más Vendidos del Día')
-        .setHeading(DocumentApp.ParagraphHeading.HEADING2);
+    // Sección 3: Productos Más Vendidos
+    var seccion3 = body.appendParagraph('🏆 3. PRODUCTOS MÁS VENDIDOS DEL DÍA');
+    seccion3.setHeading(DocumentApp.ParagraphHeading.HEADING2);
+    seccion3.setForegroundColor('#0B2E59');
+    seccion3.setBold(true);
+    seccion3.setFontSize(14);
+    
+    body.appendParagraph('');
+    
     var masVendidos = datos.tablas.masVendidos || [];
     if (masVendidos.length > 0) {
-      var tv = [['Producto', 'Unidades', 'Ganancia (S/)']];
+      var prodData = [['🏷️ Producto', '📂 Categoría', '📊 Unidades', '💵 Ganancia (S/)']];
       masVendidos.forEach(function(r) {
-        tv.push([
+        prodData.push([
           r.nombre || '',
+          r.categoria || '',
           String(r.unidades || 0),
-          Number(r.ganancia || 0).toFixed(2)
+          'S/ ' + Number(r.ganancia || 0).toFixed(2)
         ]);
       });
-      body.appendTable(tv).setBorderWidth(0.5);
+      var prodTable = body.appendTable(prodData);
+      prodTable.setBorderWidth(2);
+      prodTable.setBorderColor('#27AE60');
+      
+      var headerRow = prodTable.getRow(0);
+      headerRow.setBackgroundColor('#27AE60');
+      for (var i = 0; i < headerRow.getNumCells(); i++) {
+        var cell = headerRow.getCell(i);
+        cell.setForegroundColor('#FFFFFF');
+        cell.setBold(true);
+        cell.setPaddingTop(8);
+        cell.setPaddingBottom(8);
+      }
+      
+      for (var i = 1; i < prodTable.getNumRows(); i++) {
+        var row = prodTable.getRow(i);
+        if (i % 2 === 0) {
+          row.setBackgroundColor('#F0F8F4');
+        }
+        for (var j = 0; j < row.getNumCells(); j++) {
+          row.getCell(j).setPaddingTop(6);
+          row.getCell(j).setPaddingBottom(6);
+          row.getCell(j).setPaddingLeft(8);
+          row.getCell(j).setPaddingRight(8);
+        }
+        row.getCell(3).setBold(true);
+        row.getCell(3).setForegroundColor('#27AE60');
+      }
     } else {
-      body.appendParagraph('No hubo ventas de productos en el día.');
+      var noData = body.appendParagraph('ℹ️ No hubo ventas de productos en el día.');
+      noData.setItalic(true);
+      noData.setForegroundColor('#95A5A6');
     }
+    
     body.appendParagraph('');
+    body.appendParagraph('');
+    body.appendHorizontalRule();
+    
+    // Nota al pie mejorada
+    body.appendParagraph('');
+    var nota = body.appendParagraph('📄 Este documento representa el cierre de caja oficial del día ' + 
+                                     Utilities.formatDate(hoy, zona, 'dd/MM/yyyy'));
+    nota.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    nota.setItalic(true);
+    nota.setFontSize(9);
+    nota.setForegroundColor('#7F8C8D');
+    
+    var generado = body.appendParagraph('Generado automáticamente por el Sistema de Gestión');
+    generado.setAlignment(DocumentApp.HorizontalAlignment.CENTER);
+    generado.setFontSize(8);
+    generado.setForegroundColor('#95A5A6');
+    generado.setItalic(true);
     
     doc.saveAndClose();
     
-    // 6. Convertir a PDF
+    // Convertir a PDF
     var docFile = DriveApp.getFileById(doc.getId());
     var pdfBlob = docFile.getAs('application/pdf');
     var pdfFile = DriveApp.createFile(pdfBlob);
     pdfFile.setName(nombreArchivoBase + '.pdf');
+    
+    // Borrar doc temporal
+    docFile.setTrashed(true);
 
-    // 7. Registrar en REPORTE
+    // Registrar en REPORTE
     var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-    var repSheet = ss.getSheetByName('REPORTE'); // <_ CORREGIDO
+    var repSheet = ss.getSheetByName('REPORTE');
     var headers = repSheet.getRange(1, 1, 1, repSheet.getLastColumn()).getValues()[0];
     var nuevaFila = new Array(headers.length).fill('');
     var lastRow = repSheet.getLastRow();
     var idReporte = 'REP' + String(lastRow).padStart(3, '0');
 
-    function setCampo(nombreColumna, valor) { // <_ CORREGIDO
+    function setCampo(nombreColumna, valor) {
       var idx = headers.indexOf(nombreColumna);
       if (idx >= 0) nuevaFila[idx] = valor;
     }
+
+    var inicioDia = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0);
+    var finDia = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
 
     setCampo('ID_Reporte',       idReporte);
     setCampo('Tipo_Reporte',    'Cierre de Caja');
     setCampo('Fecha_Generacion', hoy);
     setCampo('Fecha_Desde',      inicioDia);
-    setCampo('Fecha_Hasta',      finDia); // <_ CORREGIDO
+    setCampo('Fecha_Hasta',      finDia);
     setCampo('Generado_Por',     idUsuario || Session.getActiveUser().getEmail());
     setCampo('Nivel_Detalle',    'Resumido');
     setCampo('Drive_File_Id',    pdfFile.getId());
@@ -2305,9 +2427,6 @@ function generarCierreCajaPDF(idUsuario) {
     setCampo('Origen',           'WebApp (Cierre)');
 
     repSheet.appendRow(nuevaFila);
-    
-    // 8. Borrar el Google Doc temporal
-    DriveApp.getFileById(doc.getId()).setTrashed(true);
 
     return {
       success: true,
@@ -2319,7 +2438,7 @@ function generarCierreCajaPDF(idUsuario) {
 
   } catch (error) {
     console.error('Error generarCierreCajaPDF:', error);
-    return { success: false, error: error.toString() }; // <_ CORREGIDO
+    return { success: false, error: error.toString() };
   }
 }
 

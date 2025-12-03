@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cierre de Caja - Multiservicios Sr. Puerto Malaga</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f7fa;
+      color: #2c3e50;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+    }
+
+    .header {
+      text-align: left;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 3px solid #0B2E59;
+    }
+
+    .header h1 {
+      font-size: 1.8rem;
+      color: #0B2E59;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .header .subtitle {
+      color: #E5533D;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .header .meta {
+      color: #7f8c8d;
+      font-size: 0.95rem;
+      margin-top: 10px;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      color: #2c3e50;
+      margin: 30px 0 20px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #ecf0f1;
+      font-weight: 600;
+    }
+
+    /* Summary Cards */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+
+    .summary-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 24px;
+      border-radius: 12px;
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+
+    .summary-card.primary {
+      background: linear-gradient(135deg, #0B2E59 0%, #1a4d8f 100%);
+    }
+
+    .summary-card.success {
+      background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    }
+
+    .summary-title {
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+      opacity: 0.95;
+      font-weight: 500;
+    }
+
+    .summary-value {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    thead {
+      background: #ecf5ff;
+      color: #0B2E59;
+    }
+
+    th {
+      padding: 14px 16px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #ecf0f1;
+      font-size: 0.95rem;
+    }
+
+    tbody tr:hover {
+      background: #f8f9fa;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tfoot {
+      background: #f8f9fa;
+      font-weight: 700;
+    }
+
+    tfoot td {
+      border-top: 2px solid #0B2E59;
+      padding: 16px;
+      font-size: 1.05rem;
+      color: #0B2E59;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 40px;
+      color: #95a5a6;
+      font-style: italic;
+    }
+
+    .footer-note {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 2px solid #ecf0f1;
+      text-align: center;
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+
+    .highlight {
+      background: #fff3cd;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    @media print {
+      body {
+        padding: 0;
+        background: white;
+      }
+      .container {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Multiservicios Sr. Puerto Malaga</h1>
+      <div class="subtitle">CIERRE DE CAJA</div>
+      <div class="meta">
+        <div class="meta-row">
+          <span>Fecha de cierre: <strong><?= fechaCierre ?></strong></span>
+          <span>Hora: <strong><?= horaCierre ?></strong></span>
+        </div>
+        <div class="meta-row">
+          <span>Generado por: <strong><?= generadoPor ?></strong></span>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title">1. Resumen de Ventas del Día</h2>
+    <div class="summary-grid">
+      <div class="summary-card primary">
+        <div class="summary-title">Ventas Totales del Día</div>
+        <div class="summary-value">S/ <?= totalVentasDia ?></div>
+      </div>
+
+      <div class="summary-card success">
+        <div class="summary-title">Pedidos Completados</div>
+        <div class="summary-value"><?= pedidosCompletados ?></div>
+      </div>
+    </div>
+
+    <h2 class="section-title">2. Desglose por Método de Pago</h2>
+    <? if (resumenPagos.length > 0) { ?>
+      <table>
+        <thead>
+          <tr>
+            <th>Método de Pago</th>
+            <th class="text-right">Total Recaudado (S/)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <? for (var i = 0; i < resumenPagos.length; i++) { ?>
+            <tr>
+              <td><?= resumenPagos[i].metodo ?></td>
+              <td class="text-right"><?= resumenPagos[i].total.toFixed(2) ?></td>
+            </tr>
+          <? } ?>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>TOTAL RECAUDADO</td>
+            <td class="text-right">S/ <?= totalRecaudado ?></td>
+          </tr>
+        </tfoot>
+      </table>
+    <? } else { ?>
+      <div class="no-data">No se registraron pagos en el día.</div>
+    <? } ?>
+
+    <h2 class="section-title">3. Productos Más Vendidos del Día</h2>
+    <? if (masVendidos.length > 0) { ?>
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th class="text-center">Unidades</th>
+            <th class="text-right">Ganancia (S/)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <? for (var i = 0; i < masVendidos.length; i++) { ?>
+            <tr>
+              <td><?= masVendidos[i].nombre ?></td>
+              <td><?= masVendidos[i].categoria ?></td>
+              <td class="text-center"><?= masVendidos[i].unidades ?></td>
+              <td class="text-right"><?= masVendidos[i].ganancia.toFixed(2) ?></td>
+            </tr>
+          <? } ?>
+        </tbody>
+      </table>
+    <? } else { ?>
+      <div class="no-data">No hubo ventas de productos en el día.</div>
+    <? } ?>
+
+    <div class="footer-note">
+      Este documento representa el cierre de caja del día <?= fechaCierre ?><br>
+      Generado automáticamente por el Sistema de Gestión - Multiservicios Sr. Puerto Malaga
+    </div>
+  </div>
+</body>
+</html>
