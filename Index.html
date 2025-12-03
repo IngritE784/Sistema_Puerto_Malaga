@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema de Gestión - Tienda</title>
 
+   <!-- Dependencias externas:
+    - Quagga: Librería para escanear códigos de barras usando la cámara.
+    - Font Awesome: Iconografía para la interfaz de usuario.
+    - SweetAlert2: Librería para alertas y modales interactivos y estilizados.
+    - Chart.js: Librería para la generación de gráficos en el dashboard.
+  -->
+
   <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
@@ -12,6 +19,8 @@
 
   <style>
     /* ---------- Variables y Configuración Global ---------- */
+
+     /* Define una paleta de colores para mantener la consistencia en el diseño */
     :root {
       --primary: #0B2E59;
       --secondary: #E5533D;

@@ -1,5 +1,6 @@
 // ================= Configuración =================
-var SPREADSHEET_ID = '1VTF5ChP8eavortE2O8qzm3P3jZe5yRB5jfbKhhiyXs0';
+var SPREADSHEET_ID = '1VTF5ChP8eavortE2O8qzm3P3jZe5yRB5jfbKhhiyXs0';// ID de la hoja de cálculo de Google Sheets que actúa como base de datos
+
 
 // ================= Funciones de carpetas =================
 /**
@@ -32,6 +33,10 @@ function obtenerOCrearCarpeta(nombreCarpeta) {
 
 
 // ================= Render HTML ===================
+/**
+ * Función principal que se ejecuta al acceder a la URL del script (doGet).
+ * Renderiza el archivo Index.html como la interfaz de usuario de la aplicación web.
+ */
 function doGet() {
   return HtmlService.createTemplateFromFile('Index')
     .evaluate()
