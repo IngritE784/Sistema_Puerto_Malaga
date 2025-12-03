@@ -182,6 +182,10 @@ function loginUsuario(email, password) {
 
 
 // ================ Estadísticas simples (compat) ================
+/**
+ * Obtiene estadísticas básicas (KPIs) para el dashboard.
+ * @return {Object} Objeto con KPIs (totalProductos, totalVentasHoy, alertasStock, etc.)
+ */
 function getEstadisticas() {
   try {
     var productos = getSheetData('PRODUCTO');
