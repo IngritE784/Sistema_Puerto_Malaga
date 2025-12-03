@@ -130,7 +130,13 @@ function parseFecha(str) {
 
 // ================= Autenticación =================
 
-
+/**
+ * Realiza el proceso de login: busca el usuario por email y contraseña,
+ * y luego determina su rol activo a partir de la hoja HISTORIAL_ROL.
+ * @param {string} email - Email del usuario
+ * @param {string} password - Contraseña del usuario
+ * @return {Object|null} Objeto usuario con su rol si el login es exitoso, o null
+ */
 // Login de usuario: USUARIO + HISTORIAL_ROL (para obtener Rol activo)
 function loginUsuario(email, password) {
   try {
